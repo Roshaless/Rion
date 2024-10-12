@@ -12,6 +12,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rion.Core", "src\Rion.Core\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rion.Cli", "src\Rion.Cli\Rion.Cli.csproj", "{303D0C95-5E4C-4C05-892F-CA85736CB260}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rion.App.UI", "src\Rion.App.UI\Rion.App.UI.csproj", "{6B8A7815-7AC1-4A5A-A2D5-113403FA363E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -26,6 +28,10 @@ Global
 		{303D0C95-5E4C-4C05-892F-CA85736CB260}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{303D0C95-5E4C-4C05-892F-CA85736CB260}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{303D0C95-5E4C-4C05-892F-CA85736CB260}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6B8A7815-7AC1-4A5A-A2D5-113403FA363E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6B8A7815-7AC1-4A5A-A2D5-113403FA363E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6B8A7815-7AC1-4A5A-A2D5-113403FA363E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6B8A7815-7AC1-4A5A-A2D5-113403FA363E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
