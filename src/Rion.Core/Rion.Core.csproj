@@ -9,4 +9,8 @@
     <LangVersion>preview</LangVersion>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="System.IO.Hashing" Version="9.0.0-rc.2.24473.5" />
+  </ItemGroup>
+  
 </Project>
