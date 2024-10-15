@@ -11,55 +11,55 @@ using Rion.Core.Metadata.Legacy;
 namespace Rion.Core.Metadata;
 
 /// <summary>
-/// 
+/// The metadata of string table.
 /// </summary>
 public sealed record class RStringTableMetadata : IRStringTableMetadata
 {
     /// <summary>
-    /// 
+    /// A metadata for old version 2 (with no backing font config).
     /// </summary>
-    public static IRStringTableMetadata Version2 { get; } = LegacyFontConfigMetadata.NullMetadata;
+    public static readonly IRStringTableMetadata Version2 = LegacyFontConfigMetadata.NullMetadata;
 
     /// <summary>
-    /// 
+    /// A metadata for old version 3.
     /// </summary>
-    public static IRStringTableMetadata Version3 { get; } = new LegacyNoFontConfigMetadata(RSTHashBitsMaskType.Mask40);
+    public static readonly IRStringTableMetadata Version3 = new LegacyNoFontConfigMetadata(RSTHashBitsMaskType.Mask40);
 
     /// <summary>
-    /// 
+    /// A metadata for old version 4.
     /// </summary>
-    public static IRStringTableMetadata Version4 { get; } = new LegacyNoFontConfigMetadata(RSTHashBitsMaskType.Mask39);
+    public static readonly IRStringTableMetadata Version4 = new LegacyNoFontConfigMetadata(RSTHashBitsMaskType.Mask39);
 
     /// <summary>
-    /// Get if that verison is less than (<![CDATA[<]]>) 14.15
+    /// A metadata for version 5 less than v14.15.
     /// </summary>
-    public static IRStringTableMetadata Version5Legacy { get; } = new LegacyRStringTableMetadata();
+    public static readonly IRStringTableMetadata Version5Legacy = new LegacyRStringTableMetadata();
 
     /// <summary>
-    /// 
+    /// A metadata for latest (version 5 greater than v14.15+).
     /// </summary>
-    public static IRStringTableMetadata Latest { get; } = new RStringTableMetadata();
+    public static readonly IRStringTableMetadata Latest = new RStringTableMetadata();
 
     /// <summary>
-    /// 
+    /// The metadata for version 5 less than v14.15.
     /// </summary>
     private sealed class LegacyRStringTableMetadata : IRStringTableMetadata
     {
         /// <inheritdoc/>
-        public IRSTHashAlgorithm HashAlgorithm => LegacyRSTHashAlgorithm.MaskType39;
+        public IRSTHashAlgorithm HashAlgorithm => LegacyRSTHashAlgorithm.BitsMask39;
 
         /// <inheritdoc/>
         public byte Version => 5;
     }
 
     /// <inheritdoc/>
-    public IRSTHashAlgorithm HashAlgorithm => RSTHashAlgorithm.MaskType39;
+    public IRSTHashAlgorithm HashAlgorithm => RSTHashAlgorithm.BitsMask39;
 
     /// <inheritdoc/>
     public byte Version => 5;
 
     /// <summary>
-    /// 
+    /// Initializes a new instance of the <see cref="RStringTableMetadata"/> class.
     /// </summary>
     public RStringTableMetadata() { }
 }

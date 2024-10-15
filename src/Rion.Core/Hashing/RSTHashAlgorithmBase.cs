@@ -5,7 +5,6 @@
 // LICENSE file in the root directory of this source tree.
 
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.Runtime.CompilerServices;
@@ -14,7 +13,7 @@ using System.Text;
 namespace Rion.Core.Hashing;
 
 /// <summary>
-/// The base class of the RST hash algorithm and provides some base implementations.
+/// The base class of the RST hash algorithm and provides some implementations.
 /// </summary>
 public abstract class RSTHashAlgorithmBase : IRSTHashAlgorithm
 {
@@ -25,9 +24,9 @@ public abstract class RSTHashAlgorithmBase : IRSTHashAlgorithm
     public ulong BitsMaskValue { get; }
 
     /// <summary>
-    /// Initializes the base class <see cref="RSTHashAlgorithm"/> with <see cref="RSTHashBitsMaskType"/>.
+    /// Initializes the base class <see cref="RSTHashAlgorithm"/> based on the specified BitsMask type.
     /// </summary>
-    /// <param name="bitsMaskType">The specified bits mask type.</param>
+    /// <param name="bitsMaskType">The specified BitsMask type.</param>
     public RSTHashAlgorithmBase(RSTHashBitsMaskType bitsMaskType)
     {
         Debug.Assert(Enum.IsDefined(bitsMaskType));
@@ -46,16 +45,24 @@ public abstract class RSTHashAlgorithmBase : IRSTHashAlgorithm
         => Hash(toHash, encoding, CultureInfo.CurrentCulture);
 
     /// <inheritdoc/>
-    public virtual ulong Hash(string toHash, Encoding encoding, CultureInfo cultureInfo)
+    public virtual ulong Hash(string toHash, Encoding encoding, CultureInfo culture)
     {
-        ArgumentNullException.ThrowIfNull(encoding);
-        ArgumentNullException.ThrowIfNull(cultureInfo);
+        if (string.IsNullOrWhiteSpace(toHash))
+        {
+            return Hash(default(ReadOnlySpan<byte>));
+        }
+
+        unsafe
+        {
+            encoding ??= Encoding.UTF8;
+            culture ??= CultureInfo.CurrentCulture;
+        }
 
         if (toHash.Length < 256)
         {
             Span<char> destination = stackalloc char[toHash.Length];
             {
-                var written = toHash.AsSpan().ToLower(destination, cultureInfo);
+                var written = toHash.AsSpan().ToLower(destination, culture);
                 Debug.Assert(written == toHash.Length);
             }
 
@@ -63,7 +70,7 @@ public abstract class RSTHashAlgorithmBase : IRSTHashAlgorithm
         }
         else
         {
-            return Hash(encoding.GetBytes(toHash.ToLower(cultureInfo)));
+            return Hash(encoding.GetBytes(toHash.ToLower(culture)));
         }
     }
 
@@ -81,10 +88,10 @@ public abstract class RSTHashAlgorithmBase : IRSTHashAlgorithm
     /// <inheritdoc/>
     public virtual ulong HashWithOffset(string toHash, long offset, Encoding encoding, CultureInfo cultureInfo)
     {
-        ArgumentNullException.ThrowIfNull(toHash);
         ArgumentOutOfRangeException.ThrowIfNegative(offset);
-
-        return WithOffset(Hash(toHash, encoding, cultureInfo), offset);
+        {
+            return WithOffset(Hash(toHash, encoding, cultureInfo), offset);
+        }
     }
 
     /// <inheritdoc/>

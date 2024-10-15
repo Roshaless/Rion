@@ -9,18 +9,18 @@ using System.Runtime.CompilerServices;
 namespace Rion.Core.Internal;
 
 /// <summary>
-/// 
+/// Nothing...
 /// </summary>
 internal static class Nothing
 {
     /// <summary>
-    /// 
+    /// Nothing Todo...
     /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static void ToDo() { }
 
     /// <summary>
-    /// 
+    /// Nothing Todo...
     /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static T ToDo<T>() where T : class => null!;

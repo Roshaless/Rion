@@ -10,21 +10,21 @@ using System.IO.Hashing;
 namespace Rion.Core.Hashing;
 
 /// <summary>
-/// 
+/// Provides an implementation of the rst hash algorithm.
 /// </summary>
 public sealed class RSTHashAlgorithm : RSTHashAlgorithmBase
 {
     /// <summary>
-    /// 
+    /// Gets the rst hash algorithm of BitsMask39, for v5+(greater than v14.15).
     /// </summary>
-    public static RSTHashAlgorithm MaskType39 { get; } = new(RSTHashBitsMaskType.Mask39);
+    public static RSTHashAlgorithm BitsMask39 { get; } = new(RSTHashBitsMaskType.Mask39);
 
     /* Where MaskType40 ? Wee don't need it, because that is obsolete. */
 
     /// <summary>
-    /// Initializes the base class <see cref="RSTHashAlgorithm"/> with <see cref="RSTHashBitsMaskType"/>.
+    /// Initializes a new instance of the <see cref="RSTHashAlgorithm"/> class based on the specified BitsMask type.
     /// </summary>
-    /// <param name="bitsMaskType"></param>
+    /// <param name="bitsMaskType">The specified BitsMask type.</param>
     private RSTHashAlgorithm(RSTHashBitsMaskType bitsMaskType) : base(bitsMaskType) { }
 
     /// <inheritdoc/>

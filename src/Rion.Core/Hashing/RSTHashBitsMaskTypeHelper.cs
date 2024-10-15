@@ -11,7 +11,7 @@ namespace Rion.Core.Hashing;
 public static class RSTHashBitsMaskTypeHelper
 {
     /// <summary>
-    /// Get the bits mask value used to generate hashes.
+    /// Get the value of BitsMask used to computes hashes.
     /// </summary>
     /// <param name="type">The type of <see cref="RSTFile"/>.</param>
     /// <returns>The bits mask value.</returns>

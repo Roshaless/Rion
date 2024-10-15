@@ -10,22 +10,22 @@ using Rion.Core.Hashing.Legacy;
 namespace Rion.Core.Metadata.Legacy;
 
 /// <summary>
-/// 
+/// [Legacy] The metadata with font config for old version (v2).
 /// </summary>
 public sealed record class LegacyFontConfigMetadata : ILegacyFontConfigMetadata
 {
     /// <summary>
-    /// 
+    /// A metadata with no backing font config.
     /// </summary>
     public static readonly ILegacyFontConfigMetadata NullMetadata = new NullFontConfigMetadata();
 
     /// <summary>
-    /// 
+    /// The metadata with no backing font config.
     /// </summary>
     private sealed class NullFontConfigMetadata : ILegacyFontConfigMetadata
     {
         /// <inheritdoc/>
-        public IRSTHashAlgorithm HashAlgorithm => LegacyRSTHashAlgorithm.MaskType40;
+        public IRSTHashAlgorithm HashAlgorithm => LegacyRSTHashAlgorithm.BitsMask40;
 
         /// <inheritdoc/>
         public byte Version => 2;
@@ -44,23 +44,21 @@ public sealed record class LegacyFontConfigMetadata : ILegacyFontConfigMetadata
     /// <inheritdoc/>
     public byte Version { get; }
 
-    /// <summary>
-    /// 
-    /// </summary>
+    /// <inheritdoc/>
     public string? FontConfig { get; set; }
 
     /// <summary>
-    /// 
+    /// Initializes a new instance of the <see cref="LegacyFontConfigMetadata"/> class.
     /// </summary>
     public LegacyFontConfigMetadata()
     {
         Version = 2;
-        HashAlgorithm = LegacyRSTHashAlgorithm.MaskType40;
+        HashAlgorithm = LegacyRSTHashAlgorithm.BitsMask40;
     }
 
     /// <summary>
-    /// 
+    /// Initializes a new instance of the <see cref="LegacyFontConfigMetadata"/> class based on the specified font config.
     /// </summary>
-    /// <param name="fontConfig"></param>
+    /// <param name="fontConfig">The font config.</param>
     public LegacyFontConfigMetadata(string fontConfig) : this() => FontConfig = fontConfig;
 }
