@@ -27,7 +27,7 @@ public static class RStringTableExtensions
     /// <param name="collection">The collection of hashes and strings.</param>
     /// <param name="metadata">The metadata to set.</param>
     /// <returns>A new instance of the <see cref="RStringTable"/> class, based on the <paramref name="collection"/> and <paramref name="metadata"/>.</returns>
-    public static RStringTable AsRStringTable(
+    public static RStringTable ToRStringTable(
         this IEnumerable<KeyValuePair<ulong, string>> collection,
         IRStringTableMetadata metadata) => new(collection, metadata);
 
@@ -37,7 +37,7 @@ public static class RStringTableExtensions
     /// <param name="dictionary">The generic collection of key/value pairs.</param>
     /// <param name="metadata">The metadata to set.</param>
     /// <returns>A new instance of the <see cref="RStringTable"/> class, based on the <paramref name="dictionary"/> and <paramref name="metadata"/>.</returns>
-    public static RStringTable AsRStringTable(
+    public static RStringTable ToRStringTable(
         this IDictionary<ulong, string> dictionary,
         IRStringTableMetadata metadata) => new(dictionary, metadata);
 
