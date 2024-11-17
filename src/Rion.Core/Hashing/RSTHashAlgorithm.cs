@@ -28,10 +28,10 @@ public sealed class RSTHashAlgorithm : RSTHashAlgorithmBase
     private RSTHashAlgorithm(RSTHashBitsMaskType bitsMaskType) : base(bitsMaskType) { }
 
     /// <inheritdoc/>
-    public override ulong Hash(ReadOnlySpan<byte> source) => PatchNewRSTHash(XxHash3.HashToUInt64(source) & BitsMaskValue);
+    public override ulong Hash(ReadOnlySpan<byte> source) => TrimXxHash3(XxHash3.HashToUInt64(source) & BitsMaskValue);
 
     // For v14.15+
-    private static ulong PatchNewRSTHash(ulong hash)
+    private static ulong TrimXxHash3(ulong hash)
     {
         unsafe
         {
