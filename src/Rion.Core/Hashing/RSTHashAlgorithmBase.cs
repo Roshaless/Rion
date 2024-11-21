@@ -13,20 +13,14 @@ using System.Text;
 namespace Rion.Core.Hashing;
 
 /// <summary>
-/// The base class of the RST hash algorithm and provides some implementations.
+/// Represents the base class for rst hash algorithm implementations, providing fundamental methods and properties.
 /// </summary>
 public abstract class RSTHashAlgorithmBase : IRSTHashAlgorithm
 {
-    /// <inheritdoc/>
-    public RSTHashBitsMaskType BitsMaskType { get; }
-
-    /// <inheritdoc/>
-    public ulong BitsMaskValue { get; }
-
     /// <summary>
-    /// Initializes the base class <see cref="RSTHashAlgorithm"/> based on the specified BitsMask type.
+    /// Defines the fundamental methods and properties for rst hash algorithm implementations.
+    /// This is an abstract class that serves as the base for creating rst hash algorithm instances.
     /// </summary>
-    /// <param name="bitsMaskType">The specified BitsMask type.</param>
     public RSTHashAlgorithmBase(RSTHashBitsMaskType bitsMaskType)
     {
         Debug.Assert(Enum.IsDefined(bitsMaskType));
@@ -36,27 +30,30 @@ public abstract class RSTHashAlgorithmBase : IRSTHashAlgorithm
         }
     }
 
-    /// <inheritdoc/>
+    /// <inheritdoc />
+    public RSTHashBitsMaskType BitsMaskType { get; }
+
+    /// <inheritdoc />
+    public ulong BitsMaskValue { get; }
+
+    /// <inheritdoc />
     public virtual ulong Hash(string toHash)
         => Hash(toHash, Encoding.UTF8, CultureInfo.CurrentCulture);
 
-    /// <inheritdoc/>
+    /// <inheritdoc />
     public virtual ulong Hash(string toHash, Encoding encoding)
         => Hash(toHash, encoding, CultureInfo.CurrentCulture);
 
-    /// <inheritdoc/>
-    public virtual ulong Hash(string toHash, Encoding encoding, CultureInfo culture)
+    /// <inheritdoc />
+    public virtual ulong Hash(string toHash, Encoding? encoding, CultureInfo? culture)
     {
         if (string.IsNullOrWhiteSpace(toHash))
         {
             return Hash(default(ReadOnlySpan<byte>));
         }
 
-        unsafe
-        {
-            encoding ??= Encoding.UTF8;
-            culture ??= CultureInfo.CurrentCulture;
-        }
+        encoding ??= Encoding.UTF8;
+        culture ??= CultureInfo.CurrentCulture;
 
         if (toHash.Length < 256)
         {
@@ -68,24 +65,22 @@ public abstract class RSTHashAlgorithmBase : IRSTHashAlgorithm
 
             return Hash(encoding.GetBytes(destination.ToArray()));
         }
-        else
-        {
-            return Hash(encoding.GetBytes(toHash.ToLower(culture)));
-        }
+
+        return Hash(encoding.GetBytes(toHash.ToLower(culture)));
     }
 
-    /// <inheritdoc/>
+    /// <inheritdoc />
     public abstract ulong Hash(ReadOnlySpan<byte> source);
 
-    /// <inheritdoc/>
+    /// <inheritdoc />
     public virtual ulong HashWithOffset(string toHash, long offset)
         => HashWithOffset(toHash, offset, Encoding.UTF8, CultureInfo.CurrentCulture);
 
-    /// <inheritdoc/>
+    /// <inheritdoc />
     public virtual ulong HashWithOffset(string toHash, long offset, Encoding encoding)
         => HashWithOffset(toHash, offset, encoding, CultureInfo.CurrentCulture);
 
-    /// <inheritdoc/>
+    /// <inheritdoc />
     public virtual ulong HashWithOffset(string toHash, long offset, Encoding encoding, CultureInfo cultureInfo)
     {
         ArgumentOutOfRangeException.ThrowIfNegative(offset);
@@ -94,7 +89,7 @@ public abstract class RSTHashAlgorithmBase : IRSTHashAlgorithm
         }
     }
 
-    /// <inheritdoc/>
+    /// <inheritdoc />
     public virtual ulong HashWithOffset(ReadOnlySpan<byte> source, long offset)
     {
         ArgumentOutOfRangeException.ThrowIfNegative(offset);
@@ -103,7 +98,7 @@ public abstract class RSTHashAlgorithmBase : IRSTHashAlgorithm
         }
     }
 
-    /// <inheritdoc/>
+    /// <inheritdoc />
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public virtual ulong WithOffset(ulong hash, long offset)
         => hash + ((ulong)offset << (byte)BitsMaskType);

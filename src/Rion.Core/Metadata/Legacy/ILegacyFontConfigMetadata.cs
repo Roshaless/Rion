@@ -7,12 +7,13 @@
 namespace Rion.Core.Metadata.Legacy;
 
 /// <summary>
-/// [Legacy] Represents a metadata with font config (for v2).
+/// [Legacy] Defines the required properties for a font configuration metadata in a legacy rst (v2).
 /// </summary>
 public interface ILegacyFontConfigMetadata : IRStringTableMetadata
 {
     /// <summary>
-    /// Gets or sets the font config of this Metadata.
+    /// Gets or sets the font configuration for the legacy metadata.
+    /// This property holds the font settings used in the v2 legacy rst.
     /// </summary>
     string? FontConfig { get; set; }
 }

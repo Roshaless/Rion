@@ -10,26 +10,28 @@ using System.IO.Hashing;
 namespace Rion.Core.Hashing.Legacy;
 
 /// <summary>
-/// [Legacy] Provides an implementation of the rst hash algorithm.
+/// [Legacy] Represents the legacy implementation of the RST hash algorithm, offering
+/// specific bits mask types for hashing operations.
 /// </summary>
 public sealed class LegacyRSTHashAlgorithm : RSTHashAlgorithmBase
 {
     /// <summary>
-    /// [Legacy] Gets the rst hash algorithm of BitsMask39, for rst v4, v5(less than v14.15).
+    /// Represents a legacy implementation of the RST hash algorithm with predefined bits mask types for hashing operations.
+    /// </summary>
+    private LegacyRSTHashAlgorithm(RSTHashBitsMaskType bitsMaskType) : base(bitsMaskType) { }
+
+    /// <summary>
+    /// Represents a predefined instance of <see cref="LegacyRSTHashAlgorithm"/> configured with <see cref="RSTHashBitsMaskType.Mask39"/>.
+    /// This is specifically designed for compatibility with legacy RST hash algorithm versions, targeting v4 and v5 (prior to v14.15).
     /// </summary>
     public static LegacyRSTHashAlgorithm BitsMask39 { get; } = new(RSTHashBitsMaskType.Mask39);
 
     /// <summary>
-    /// [Legacy] Gets the rst hash algorithm of BitsMask40, for rst v2, v3.
+    /// Represents a predefined instance of <see cref="LegacyRSTHashAlgorithm"/> configured with <see cref="RSTHashBitsMaskType.Mask40"/>.
+    /// Designed for compatibility with specific legacy RST hash scenarios, this property provides a mask for 40-bit hashing operations.
     /// </summary>
     public static LegacyRSTHashAlgorithm BitsMask40 { get; } = new(RSTHashBitsMaskType.Mask40);
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="LegacyRSTHashAlgorithm"/> class based on the specified BitsMask type.
-    /// </summary>
-    /// <param name="bitsMaskType">The specified bits mask type.</param>
-    private LegacyRSTHashAlgorithm(RSTHashBitsMaskType bitsMaskType) : base(bitsMaskType) { }
-
-    /// <inheritdoc/>
+    /// <inheritdoc />
     public override ulong Hash(ReadOnlySpan<byte> source) => XxHash64.HashToUInt64(source) & BitsMaskValue;
 }

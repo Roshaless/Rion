@@ -12,21 +12,16 @@ using Rion.Core.Hashing.Legacy;
 namespace Rion.Core.Metadata.Legacy;
 
 /// <summary>
-/// [Legacy] The metadata without font config for old version (v3, v4).
+/// Represents legacy metadata that lacks font configuration for versions 3 and 4.
+/// This class encapsulates details specific to these older versions, including the hash algorithm used.
 /// </summary>
-public sealed record class LegacyNoFontConfigMetadata : IRStringTableMetadata
+public sealed record LegacyNoFontConfigMetadata : IRStringTableMetadata
 {
-    /// <inheritdoc/>
-    public IRSTHashAlgorithm HashAlgorithm { get; }
-
-    /// <inheritdoc/>
-    public byte Version { get; }
-
     /// <summary>
-    /// Initializes a new instance of the <see cref="LegacyNoFontConfigMetadata"/> class based on the specified BitsMask type.
+    /// Represents a sealed record class for legacy metadata devoid of font configuration
+    /// applicable to version 3 and 4. It encapsulates specifics like the hash algorithm
+    /// pertinent to these legacy versions.
     /// </summary>
-    /// <param name="bitsMaskType">The specified BitsMask type.</param>
-    /// <exception cref="ArgumentException">The BitsMask type is unsupported.</exception>
     public LegacyNoFontConfigMetadata(RSTHashBitsMaskType bitsMaskType)
     {
         if (bitsMaskType is RSTHashBitsMaskType.Mask39)
@@ -44,4 +39,10 @@ public sealed record class LegacyNoFontConfigMetadata : IRStringTableMetadata
             throw new ArgumentException($"Unsupported BitsMask type: {bitsMaskType}", nameof(bitsMaskType));
         }
     }
+
+    /// <inheritdoc />
+    public IRSTHashAlgorithm HashAlgorithm { get; }
+
+    /// <inheritdoc />
+    public byte Version { get; }
 }

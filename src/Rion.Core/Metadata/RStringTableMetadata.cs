@@ -11,55 +11,58 @@ using Rion.Core.Metadata.Legacy;
 namespace Rion.Core.Metadata;
 
 /// <summary>
-/// The metadata of string table.
+/// Represents the metadata for a string table, including hashing algorithm and version details.
 /// </summary>
-public sealed record class RStringTableMetadata : IRStringTableMetadata
+public sealed record RStringTableMetadata : IRStringTableMetadata
 {
     /// <summary>
-    /// A metadata for old version 2 (with no backing font config).
+    /// Represents the metadata for version 2, indicating a legacy configuration without a backing font configuration.
     /// </summary>
     public static readonly IRStringTableMetadata Version2 = LegacyFontConfigMetadata.NullMetadata;
 
     /// <summary>
-    /// A metadata for old version 3.
+    /// Represents the metadata for version 3, indicating a legacy configuration with a specific hash bits mask type set to <see cref="RSTHashBitsMaskType.Mask40"/>.
     /// </summary>
     public static readonly IRStringTableMetadata Version3 = new LegacyNoFontConfigMetadata(RSTHashBitsMaskType.Mask40);
 
     /// <summary>
-    /// A metadata for old version 4.
+    /// Represents the metadata for version 4, indicating a legacy configuration with a specific hash bits mask type set to <see cref="RSTHashBitsMaskType.Mask39"/>.
     /// </summary>
     public static readonly IRStringTableMetadata Version4 = new LegacyNoFontConfigMetadata(RSTHashBitsMaskType.Mask39);
 
     /// <summary>
-    /// A metadata for version 5 less than v14.15.
+    /// Represents the metadata for version 5 legacy configurations applicable to versions prior to v14.15.
     /// </summary>
     public static readonly IRStringTableMetadata Version5Legacy = new LegacyRStringTableMetadata();
 
     /// <summary>
-    /// A metadata for latest (version 5 greater than v14.15+).
+    /// Points to the most up-to-date version of the string table metadata.
+    /// This is used as the default for creating new <see cref="RStringTable"/> instances.
     /// </summary>
     public static readonly IRStringTableMetadata Latest = new RStringTableMetadata();
 
     /// <summary>
-    /// The metadata for version 5 less than v14.15.
+    /// Defines the contract for metadata related to RStringTable, specifying hash algorithm and version properties.
     /// </summary>
-    private sealed class LegacyRStringTableMetadata : IRStringTableMetadata
-    {
-        /// <inheritdoc/>
-        public IRSTHashAlgorithm HashAlgorithm => LegacyRSTHashAlgorithm.BitsMask39;
+    private RStringTableMetadata() { }
 
-        /// <inheritdoc/>
-        public byte Version => 5;
-    }
-
-    /// <inheritdoc/>
+    /// <inheritdoc />
     public IRSTHashAlgorithm HashAlgorithm => RSTHashAlgorithm.BitsMask39;
 
-    /// <inheritdoc/>
+    /// <inheritdoc />
     public byte Version => 5;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="RStringTableMetadata"/> class.
+    /// Represents the legacy specific metadata for string table configurations used in versions prior to v14.15.
+    /// This class is designed to maintain compatibility with historical system requirements and includes
+    /// details on the hashing algorithm in use during that period.
     /// </summary>
-    public RStringTableMetadata() { }
+    private sealed class LegacyRStringTableMetadata : IRStringTableMetadata
+    {
+        /// <inheritdoc />
+        public IRSTHashAlgorithm HashAlgorithm => LegacyRSTHashAlgorithm.BitsMask39;
+
+        /// <inheritdoc />
+        public byte Version  => 5;
+    }
 }

@@ -9,17 +9,20 @@ using Rion.Core.Hashing;
 namespace Rion.Core.Metadata;
 
 /// <summary>
-/// Represents a metadata of string table.
+/// Defines the contract for metadata of a string table, specifying the hash algorithm and version details.
 /// </summary>
 public interface IRStringTableMetadata
 {
     /// <summary>
-    /// Gets the current hash algorithm used of this metadata.
+    /// Gets the hash algorithm instance used for generating hashes within the string table.
     /// </summary>
     IRSTHashAlgorithm HashAlgorithm { get; }
 
     /// <summary>
-    /// Gets the current version of this metadata.
+    /// Gets the current version of the string table metadata.
     /// </summary>
+    /// <value>
+    /// A byte representing the version number of the string table metadata.
+    /// </value>
     byte Version { get; }
 }

@@ -10,27 +10,28 @@ using System.IO.Hashing;
 namespace Rion.Core.Hashing;
 
 /// <summary>
-/// Provides an implementation of the rst hash algorithm.
+/// Represents an implementation of the RST hash algorithm, providing various hash computation methods.
 /// </summary>
 public sealed class RSTHashAlgorithm : RSTHashAlgorithmBase
 {
     /// <summary>
-    /// Gets the rst hash algorithm of BitsMask39, for v5+(greater than v14.15).
+    /// Represents an enumeration of different BitsMask types used by the RST hash algorithm.
+    /// </summary>
+    private RSTHashAlgorithm(RSTHashBitsMaskType bitsMaskType) : base(bitsMaskType) { }
+
+    /// <summary>
+    /// Gets the predefined instance of RSTHashAlgorithm configured with BitsMask39, for v5+(greater than v14.15).
     /// </summary>
     public static RSTHashAlgorithm BitsMask39 { get; } = new(RSTHashBitsMaskType.Mask39);
 
-    /* Where MaskType40 ? Wee don't need it, because that is obsolete. */
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="RSTHashAlgorithm"/> class based on the specified BitsMask type.
-    /// </summary>
-    /// <param name="bitsMaskType">The specified BitsMask type.</param>
-    private RSTHashAlgorithm(RSTHashBitsMaskType bitsMaskType) : base(bitsMaskType) { }
-
-    /// <inheritdoc/>
+    /// <inheritdoc />
     public override ulong Hash(ReadOnlySpan<byte> source) => TrimXxHash3(XxHash3.HashToUInt64(source) & BitsMaskValue);
 
-    // For v14.15+
+    /// <summary>
+    /// Trims the specified XxHash3 hash value to a smaller representation used by the rst hash algorithm.
+    /// </summary>
+    /// <param name="hash">The original XxHash3 hash value to be trimmed.</param>
+    /// <returns>The trimmed hash value according to rst algorithm's mask requirements.</returns>
     private static ulong TrimXxHash3(ulong hash)
     {
         unsafe
@@ -40,7 +41,7 @@ public sealed class RSTHashAlgorithm : RSTHashAlgorithmBase
 
             for (var i = 3; i != -1; i--)
             {
-                result = bytes[i] | result << 8;
+                result = bytes[i] | (result << 8);
             }
 
             return result;

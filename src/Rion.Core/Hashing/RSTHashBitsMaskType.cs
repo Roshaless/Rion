@@ -7,7 +7,8 @@
 namespace Rion.Core.Hashing;
 
 /// <summary>
-/// The type of BitsMask used to rst hash algorithm.
+/// Specifies the types of bit masks utilized in the rst hashing algorithm.
+/// Each mask type corresponds to a specific number of bits used during the hashing process.
 /// </summary>
 public enum RSTHashBitsMaskType
 {
