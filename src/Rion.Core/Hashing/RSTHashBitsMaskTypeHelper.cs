@@ -10,7 +10,7 @@ namespace Rion.Core.Hashing;
 
 /// <summary>
 /// Provides utility methods to obtain bits mask values based on <see cref="RSTHashBitsMaskType"/>.
-/// These masks are integral in hash computations within the RST hashing algorithm.
+/// These masks are integral in hash computations within the rst hashing algorithm.
 /// </summary>
 public static class RSTHashBitsMaskTypeHelper
 {

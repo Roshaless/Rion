@@ -5,7 +5,6 @@
 // LICENSE file in the root directory of this source tree.
 
 using Rion.Core.Hashing;
-using Rion.Core.Hashing.Legacy;
 
 namespace Rion.Core.Metadata.Legacy;
 
@@ -28,7 +27,7 @@ public sealed record LegacyFontConfigMetadata : ILegacyFontConfigMetadata
     private sealed class NullFontConfigMetadata : ILegacyFontConfigMetadata
     {
         /// <inheritdoc />
-        public IRSTHashAlgorithm HashAlgorithm => LegacyRSTHashAlgorithm.BitsMask40;
+        public IRSTHashAlgorithm HashAlgorithm => RSTHashAlgorithm.LegacyV2V3;
 
         /// <inheritdoc />
         public byte Version => 2;
@@ -43,7 +42,7 @@ public sealed record LegacyFontConfigMetadata : ILegacyFontConfigMetadata
     public LegacyFontConfigMetadata()
     {
         Version = 2;
-        HashAlgorithm = LegacyRSTHashAlgorithm.BitsMask40;
+        HashAlgorithm = RSTHashAlgorithm.LegacyV2V3;
     }
 
     /// <summary>

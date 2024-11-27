@@ -4,8 +4,8 @@
 // This source code is distributed under an MIT license.
 // LICENSE file in the root directory of this source tree.
 
+using System;
 using Rion.Core.Hashing;
-using Rion.Core.Hashing.Legacy;
 using Rion.Core.Metadata.Legacy;
 
 namespace Rion.Core.Metadata;
@@ -23,12 +23,12 @@ public sealed record RStringTableMetadata : IRStringTableMetadata
     /// <summary>
     /// Represents the metadata for version 3, indicating a legacy configuration with a specific hash bits mask type set to <see cref="RSTHashBitsMaskType.Mask40"/>.
     /// </summary>
-    public static readonly IRStringTableMetadata Version3 = new LegacyNoFontConfigMetadata(RSTHashBitsMaskType.Mask40);
+    public static readonly IRStringTableMetadata Version3 = new LegacyNoFontConfigMetadata(false);
 
     /// <summary>
     /// Represents the metadata for version 4, indicating a legacy configuration with a specific hash bits mask type set to <see cref="RSTHashBitsMaskType.Mask39"/>.
     /// </summary>
-    public static readonly IRStringTableMetadata Version4 = new LegacyNoFontConfigMetadata(RSTHashBitsMaskType.Mask39);
+    public static readonly IRStringTableMetadata Version4 = new LegacyNoFontConfigMetadata(true);
 
     /// <summary>
     /// Represents the metadata for version 5 legacy configurations applicable to versions prior to v14.15.
@@ -42,12 +42,59 @@ public sealed record RStringTableMetadata : IRStringTableMetadata
     public static readonly IRStringTableMetadata Latest = new RStringTableMetadata();
 
     /// <summary>
-    /// Defines the contract for metadata related to RStringTable, specifying hash algorithm and version properties.
+    /// Retrieves the metadata for the specified version.
+    /// </summary>
+    /// <param name="version">The version string to retrieve metadata for.</param>
+    /// <returns>The metadata for the specified version.</returns>
+    /// <exception cref="ArgumentException">The specified version is not supported.</exception>
+    public static IRStringTableMetadata GetMetadata(string version) => version switch
+    {
+        "v5-old" => Version5Legacy,
+        "5" or "v5" => Latest,
+        "4" or "v4" => Version4,
+        "3" or "v3" => Version3,
+        "2" or "v2" => new LegacyFontConfigMetadata(),
+        _ => throw new ArgumentException($"Unsupported version: {version}")
+    };
+
+    /// <summary>
+    /// Retrieves the metadata for the specified version.
+    /// </summary>
+    /// <param name="version">The version string to retrieve metadata for.</param>
+    /// <returns>The metadata for the specified version.</returns>
+    /// <exception cref="ArgumentException">The specified version is not supported.</exception>
+    public static IRStringTableMetadata GetMetadata(int version) => version switch
+    {
+        5 => Latest,
+        4 => Version4,
+        3 => Version3,
+        2 => new LegacyFontConfigMetadata(),
+        _ => throw new ArgumentException($"Unsupported version: {version}")
+    };
+
+    /// <summary>
+    /// Retrieves the version string associated with the specified metadata.
+    /// </summary>
+    /// <param name="metadata">The metadata to retrieve the version string for.</param>
+    /// <returns>The version string associated with the specified metadata.</returns>
+    /// <exception cref="ArgumentOutOfRangeException">The specified metadata is not supported.</exception>
+    public static string GetVersionString(IRStringTableMetadata metadata) => metadata switch
+    {
+        { Version: 2, HashAlgorithm: { BitsMaskType: RSTHashBitsMaskType.Mask40, TrimmingOption: RSTHashTrimmingOption.None } } or ILegacyFontConfigMetadata => "v2",
+        { Version: 3, HashAlgorithm: { BitsMaskType: RSTHashBitsMaskType.Mask40, TrimmingOption: RSTHashTrimmingOption.None } } => "v3",
+        { Version: 4, HashAlgorithm: { BitsMaskType: RSTHashBitsMaskType.Mask39, TrimmingOption: RSTHashTrimmingOption.None } } => "v4",
+        { Version: 5, HashAlgorithm: { BitsMaskType: RSTHashBitsMaskType.Mask39, TrimmingOption: RSTHashTrimmingOption.None } } => "v5-old",
+        { Version: 5, HashAlgorithm: { BitsMaskType: RSTHashBitsMaskType.Mask39, TrimmingOption: RSTHashTrimmingOption.TrimHigh3BytesWithMaskLow8Bits } } => "v5",
+        _ => throw new ArgumentOutOfRangeException(nameof(metadata), metadata, "The specified metadata is not supported.")
+    };
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="RStringTableMetadata"/> class.
     /// </summary>
     private RStringTableMetadata() { }
 
     /// <inheritdoc />
-    public IRSTHashAlgorithm HashAlgorithm => RSTHashAlgorithm.BitsMask39;
+    public IRSTHashAlgorithm HashAlgorithm => RSTHashAlgorithm.Latest;
 
     /// <inheritdoc />
     public byte Version => 5;
@@ -60,9 +107,9 @@ public sealed record RStringTableMetadata : IRStringTableMetadata
     private sealed class LegacyRStringTableMetadata : IRStringTableMetadata
     {
         /// <inheritdoc />
-        public IRSTHashAlgorithm HashAlgorithm => LegacyRSTHashAlgorithm.BitsMask39;
+        public IRSTHashAlgorithm HashAlgorithm => RSTHashAlgorithm.LegacyV4V5;
 
         /// <inheritdoc />
-        public byte Version  => 5;
+        public byte Version => 5;
     }
 }

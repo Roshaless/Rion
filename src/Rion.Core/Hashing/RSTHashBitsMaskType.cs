@@ -18,12 +18,12 @@ public enum RSTHashBitsMaskType
     None = 0x00,
 
     /// <summary>
-    /// BitsMask 39, using by RST v4, v5.
+    /// BitsMask 39, using by rst v4, v5.
     /// </summary>
     Mask39 = 39,
 
     /// <summary>
-    /// BitsMask 40, using by RST v2, v3.
+    /// BitsMask 40, using by rst v2, v3.
     /// </summary>
     Mask40 = 40
 }

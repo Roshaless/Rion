@@ -17,15 +17,20 @@ namespace Rion.Core.Hashing;
 public interface IRSTHashAlgorithm
 {
     /// <summary>
-    /// Specifies the type of bits mask applied in the RST hashing algorithm.
+    /// Specifies the type of bits mask applied in the rst hashing algorithm.
     /// </summary>
     RSTHashBitsMaskType BitsMaskType { get; }
 
     /// <summary>
-    /// Represents the value of the bits mask used in the RST hashing algorithm.
+    /// Represents the value of the bits mask used in the rst hashing algorithm.
     /// This value is derived from the configured <see cref="RSTHashBitsMaskType"/>.
     /// </summary>
     ulong BitsMaskValue { get; }
+
+    /// <summary>
+    /// Specifies the type of trimming option applied in the rst hashing algorithm.
+    /// </summary>
+    RSTHashTrimmingOption TrimmingOption { get; }
 
     /// <summary>
     /// Computes the hash value for the provided string using the default encoding and culture.

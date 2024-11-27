@@ -4,10 +4,7 @@
 // This source code is distributed under an MIT license.
 // LICENSE file in the root directory of this source tree.
 
-using System;
-
 using Rion.Core.Hashing;
-using Rion.Core.Hashing.Legacy;
 
 namespace Rion.Core.Metadata.Legacy;
 
@@ -18,25 +15,20 @@ namespace Rion.Core.Metadata.Legacy;
 public sealed record LegacyNoFontConfigMetadata : IRStringTableMetadata
 {
     /// <summary>
-    /// Represents a sealed record class for legacy metadata devoid of font configuration
-    /// applicable to version 3 and 4. It encapsulates specifics like the hash algorithm
-    /// pertinent to these legacy versions.
+    /// Initializes a new instance of the <see cref="LegacyNoFontConfigMetadata"/> class.
     /// </summary>
-    public LegacyNoFontConfigMetadata(RSTHashBitsMaskType bitsMaskType)
+    /// <param name="isV4NotV3">Determines whether the version is 4 or 3.</param>
+    public LegacyNoFontConfigMetadata(bool isV4NotV3)
     {
-        if (bitsMaskType is RSTHashBitsMaskType.Mask39)
+        if (isV4NotV3)
         {
             Version = 4;
-            HashAlgorithm = LegacyRSTHashAlgorithm.BitsMask40;
-        }
-        else if (bitsMaskType is RSTHashBitsMaskType.Mask40)
-        {
-            Version = 3;
-            HashAlgorithm = LegacyRSTHashAlgorithm.BitsMask40;
+            HashAlgorithm = RSTHashAlgorithm.LegacyV4V5;
         }
         else
         {
-            throw new ArgumentException($"Unsupported BitsMask type: {bitsMaskType}", nameof(bitsMaskType));
+            Version = 3;
+            HashAlgorithm = RSTHashAlgorithm.LegacyV2V3;
         }
     }
 

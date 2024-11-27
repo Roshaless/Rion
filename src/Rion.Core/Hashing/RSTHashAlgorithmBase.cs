@@ -18,15 +18,21 @@ namespace Rion.Core.Hashing;
 public abstract class RSTHashAlgorithmBase : IRSTHashAlgorithm
 {
     /// <summary>
-    /// Defines the fundamental methods and properties for rst hash algorithm implementations.
-    /// This is an abstract class that serves as the base for creating rst hash algorithm instances.
+    ///
     /// </summary>
-    public RSTHashAlgorithmBase(RSTHashBitsMaskType bitsMaskType)
+    /// <param name="bitsMaskType"></param>
+    /// <param name="trimmingOption"></param>
+    protected RSTHashAlgorithmBase(RSTHashBitsMaskType bitsMaskType, RSTHashTrimmingOption trimmingOption = default)
     {
         Debug.Assert(Enum.IsDefined(bitsMaskType));
         {
             BitsMaskType = bitsMaskType;
             BitsMaskValue = bitsMaskType.GetBitsMaskValue();
+        }
+
+        Debug.Assert(Enum.IsDefined(trimmingOption));
+        {
+            TrimmingOption = trimmingOption;
         }
     }
 
@@ -35,6 +41,9 @@ public abstract class RSTHashAlgorithmBase : IRSTHashAlgorithm
 
     /// <inheritdoc />
     public ulong BitsMaskValue { get; }
+
+    /// <inheritdoc />
+    public RSTHashTrimmingOption TrimmingOption { get; }
 
     /// <inheritdoc />
     public virtual ulong Hash(string toHash)
@@ -55,18 +64,19 @@ public abstract class RSTHashAlgorithmBase : IRSTHashAlgorithm
         encoding ??= Encoding.UTF8;
         culture ??= CultureInfo.CurrentCulture;
 
-        if (toHash.Length < 256)
+        if (toHash.Length >= 256)
         {
-            Span<char> destination = stackalloc char[toHash.Length];
-            {
-                var written = toHash.AsSpan().ToLower(destination, culture);
-                Debug.Assert(written == toHash.Length);
-            }
-
-            return Hash(encoding.GetBytes(destination.ToArray()));
+            return Hash(encoding.GetBytes(toHash.ToLower(culture)));
         }
 
-        return Hash(encoding.GetBytes(toHash.ToLower(culture)));
+        Span<char> destination = stackalloc char[toHash.Length];
+        {
+            var written = toHash.AsSpan().ToLower(destination, culture);
+            Debug.Assert(written == toHash.Length);
+        }
+
+        return Hash(encoding.GetBytes(destination.ToArray()));
+
     }
 
     /// <inheritdoc />
