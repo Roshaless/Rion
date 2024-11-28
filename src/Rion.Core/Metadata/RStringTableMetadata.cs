@@ -5,6 +5,8 @@
 // LICENSE file in the root directory of this source tree.
 
 using System;
+using System.Diagnostics.CodeAnalysis;
+
 using Rion.Core.Hashing;
 using Rion.Core.Metadata.Legacy;
 
@@ -47,15 +49,15 @@ public sealed record RStringTableMetadata : IRStringTableMetadata
     /// <param name="version">The version string to retrieve metadata for.</param>
     /// <returns>The metadata for the specified version.</returns>
     /// <exception cref="ArgumentException">The specified version is not supported.</exception>
-    public static IRStringTableMetadata GetMetadata(string version) => version switch
+    public static IRStringTableMetadata GetMetadata(string version)
     {
-        "v5-old" => Version5Legacy,
-        "5" or "v5" => Latest,
-        "4" or "v4" => Version4,
-        "3" or "v3" => Version3,
-        "2" or "v2" => new LegacyFontConfigMetadata(),
-        _ => throw new ArgumentException($"Unsupported version: {version}")
-    };
+        if (TryGetMetadata(version, out var metadata))
+        {
+            return metadata;
+        }
+
+        throw new ArgumentException($"Unsupported version: {version}");
+    }
 
     /// <summary>
     /// Retrieves the metadata for the specified version.
@@ -63,14 +65,15 @@ public sealed record RStringTableMetadata : IRStringTableMetadata
     /// <param name="version">The version string to retrieve metadata for.</param>
     /// <returns>The metadata for the specified version.</returns>
     /// <exception cref="ArgumentException">The specified version is not supported.</exception>
-    public static IRStringTableMetadata GetMetadata(int version) => version switch
+    public static IRStringTableMetadata GetMetadata(int version)
     {
-        5 => Latest,
-        4 => Version4,
-        3 => Version3,
-        2 => new LegacyFontConfigMetadata(),
-        _ => throw new ArgumentException($"Unsupported version: {version}")
-    };
+        if (TryGetMetadata(version, out var metadata))
+        {
+            return metadata;
+        }
+
+        throw new ArgumentException($"Unsupported version: {version}");
+    }
 
     /// <summary>
     /// Retrieves the version string associated with the specified metadata.
@@ -78,15 +81,96 @@ public sealed record RStringTableMetadata : IRStringTableMetadata
     /// <param name="metadata">The metadata to retrieve the version string for.</param>
     /// <returns>The version string associated with the specified metadata.</returns>
     /// <exception cref="ArgumentOutOfRangeException">The specified metadata is not supported.</exception>
-    public static string GetVersionString(IRStringTableMetadata metadata) => metadata switch
+    public static string GetVersionString(IRStringTableMetadata metadata)
     {
-        { Version: 2, HashAlgorithm: { BitsMaskType: RSTHashBitsMaskType.Mask40, TrimmingOption: RSTHashTrimmingOption.None } } or ILegacyFontConfigMetadata => "v2",
-        { Version: 3, HashAlgorithm: { BitsMaskType: RSTHashBitsMaskType.Mask40, TrimmingOption: RSTHashTrimmingOption.None } } => "v3",
-        { Version: 4, HashAlgorithm: { BitsMaskType: RSTHashBitsMaskType.Mask39, TrimmingOption: RSTHashTrimmingOption.None } } => "v4",
-        { Version: 5, HashAlgorithm: { BitsMaskType: RSTHashBitsMaskType.Mask39, TrimmingOption: RSTHashTrimmingOption.None } } => "v5-old",
-        { Version: 5, HashAlgorithm: { BitsMaskType: RSTHashBitsMaskType.Mask39, TrimmingOption: RSTHashTrimmingOption.TrimHigh3BytesWithMaskLow8Bits } } => "v5",
-        _ => throw new ArgumentOutOfRangeException(nameof(metadata), metadata, "The specified metadata is not supported.")
-    };
+        if (TryGetVersionString(metadata, out var result))
+        {
+            return result;
+        }
+
+        throw new ArgumentOutOfRangeException(nameof(metadata), metadata, "The specified metadata is not supported.");
+    }
+
+    /// <summary>
+    /// Attempts to retrieve the metadata for the specified version.
+    /// </summary>
+    /// <param name="version">The version string to retrieve metadata for.</param>
+    /// <param name="metadata">The metadata for the specified version.</param>
+    /// <returns><see langword="true"/> if the metadata was successfully retrieved; otherwise, <see langword="false"/>.</returns>
+    public static bool TryGetMetadata(int version, [NotNullWhen(true)] out IRStringTableMetadata? metadata)
+    {
+        metadata = version switch
+        {
+            5 => Latest,
+            4 => Version4,
+            3 => Version3,
+            2 => new LegacyFontConfigMetadata(),
+            _ => null
+        };
+
+        return metadata is not null;
+    }
+
+    /// <summary>
+    /// Attempts to retrieve the version string associated with the specified metadata.
+    /// </summary>
+    /// <param name="metadata">The metadata to retrieve the version string for.</param>
+    /// <param name="version">The version string associated with the specified metadata.</param>
+    /// <returns><see langword="true"/> if the version string was successfully retrieved; otherwise, <see langword="false"/>.</returns>
+    public static bool TryGetVersionString(IRStringTableMetadata metadata, [NotNullWhen(true)] out string? version)
+    {
+        version = metadata switch
+        {
+            {
+                Version: 2,
+                HashAlgorithm: { BitsMaskType: RSTHashBitsMaskType.Mask40, TrimmingOption: RSTHashTrimmingOption.None }
+            } or ILegacyFontConfigMetadata => "v2",
+            {
+                Version: 3,
+                HashAlgorithm: { BitsMaskType: RSTHashBitsMaskType.Mask40, TrimmingOption: RSTHashTrimmingOption.None }
+            } => "v3",
+            {
+                Version: 4,
+                HashAlgorithm: { BitsMaskType: RSTHashBitsMaskType.Mask39, TrimmingOption: RSTHashTrimmingOption.None }
+            } => "v4",
+            {
+                Version: 5,
+                HashAlgorithm: { BitsMaskType: RSTHashBitsMaskType.Mask39, TrimmingOption: RSTHashTrimmingOption.None }
+            } => "v5-old",
+            {
+                Version: 5,
+                HashAlgorithm:
+                {
+                    BitsMaskType: RSTHashBitsMaskType.Mask39,
+                    TrimmingOption: RSTHashTrimmingOption.TrimHigh3BytesWithMaskLow8Bits
+                }
+            } => "v5",
+            _ => null
+        };
+
+        return version is not null;
+    }
+
+    /// <summary>
+    /// Attempts to retrieve the metadata for the specified version.
+    /// </summary>
+    /// <param name="version">The version string to retrieve metadata for.</param>
+    /// <param name="metadata">The metadata for the specified version.</param>
+    /// <returns><see langword="true"/> if the metadata was successfully retrieved; otherwise, <see langword="false"/>.</returns>
+    public static bool TryGetMetadata([NotNullWhen(true)] string? version, [NotNullWhen(true)] out IRStringTableMetadata? metadata)
+    {
+        metadata = version switch
+        {
+            "v5-old" => Version5Legacy,
+            "5" or "v5" => Latest,
+            "4" or "v4" => Version4,
+            "3" or "v3" => Version3,
+            "2" or "v2" => new LegacyFontConfigMetadata(),
+            _ => null
+        };
+
+        return metadata is not null;
+    }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="RStringTableMetadata"/> class.
