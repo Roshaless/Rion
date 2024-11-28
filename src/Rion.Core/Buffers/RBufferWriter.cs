@@ -42,12 +42,14 @@ public sealed class RBufferWriter : SafeHandle, IRBufferWriter
     /// </summary>
     public RBufferWriter(int capacity) : base(nint.Zero, true)
     {
-        if (capacity <= 0) return;
-        else unsafe
+        if (capacity > 0)
         {
-            SetHandle((nint)NativeMemory.Alloc((nuint)capacity));
+            unsafe
             {
-                _capacity = capacity;
+                SetHandle((nint)NativeMemory.Alloc((nuint)capacity));
+                {
+                    _capacity = capacity;
+                }
             }
         }
     }
@@ -177,20 +179,18 @@ public sealed class RBufferWriter : SafeHandle, IRBufferWriter
         unsafe
         {
             var newPosition = _position + bufferSize;
-            if (newPosition > Length)
+            if (newPosition <= Length) return;
+            if (newPosition > _capacity)
             {
-                if (newPosition > _capacity)
+                var newCapacity = BitOperations.RoundUpToPowerOf2((uint)(_position + bufferSize));
                 {
-                    var newCapacity = BitOperations.RoundUpToPowerOf2((uint)(_position + bufferSize));
-                    {
-                        SetHandle((nint)NativeMemory.Realloc(handle.ToPointer(), newCapacity));
-                    }
-
-                    _capacity = (int)newCapacity;
+                    SetHandle((nint)NativeMemory.Realloc(handle.ToPointer(), newCapacity));
                 }
 
-                Length = newPosition;
+                _capacity = (int)newCapacity;
             }
+
+            Length = newPosition;
         }
     }
 
