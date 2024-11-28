@@ -88,7 +88,7 @@ public sealed class RBufferReader : IRBufferReader
     }
 
     /// <inheritdoc />
-    public T ReadAsStruct<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors |  DynamicallyAccessedMemberTypes.NonPublicConstructors)]T>() where T : struct
+    public T ReadAsStruct<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors | DynamicallyAccessedMemberTypes.NonPublicConstructors)] T>() where T : struct
     {
         unsafe
         {

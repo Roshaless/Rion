@@ -167,7 +167,7 @@ public static class RStringTableExtensions
     /// <param name="cultureInfo">The culture-specific information determining how value should be formatted.</param>
     /// <typeparam name="T">The type of the value being added, constrained to implement <see cref="IConvertible"/>.</typeparam>
     /// <returns>True if the addition was successful; false if the key already exists.</returns>
-    public static bool TryAdd<T>(this IRStringTable table, ulong key, T value, CultureInfo cultureInfo)  where T : IConvertible
+    public static bool TryAdd<T>(this IRStringTable table, ulong key, T value, CultureInfo cultureInfo) where T : IConvertible
     {
         if (table.ContainsKey(key))
             return false;

@@ -98,7 +98,7 @@ public partial class RStringTableWriter
         public int GetOffsetOrAddNew(string str)
         {
             ref var offset = ref CollectionsMarshal.GetValueRefOrAddDefault(_textToOffset, str, out var isExists);
-            if (isExists is true)  return offset;
+            if (isExists is true) return offset;
 
             offset = _bufferWriter.Position;
             _bufferWriter.Write(_stringEncoder.GetBytesWithNullChar(str));
