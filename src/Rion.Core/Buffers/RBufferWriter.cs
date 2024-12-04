@@ -20,6 +20,11 @@ namespace Rion.Core.Buffers;
 public sealed class RBufferWriter : SafeHandle, IRBufferWriter
 {
     /// <summary>
+    /// The default initial capacity used for the buffer writer.
+    /// </summary>
+    internal const int DefaultCapacity = 4;
+
+    /// <summary>
     /// The capacity of the buffer, indicating the total number of elements that the buffer can hold.
     /// </summary>
     private int _capacity;
@@ -34,7 +39,7 @@ public sealed class RBufferWriter : SafeHandle, IRBufferWriter
     /// Optimized for sequential write operations, suitable for performance-sensitive scenarios.
     /// Implements <see cref="IRBufferWriter"/> and extends <see cref="SafeHandle"/>.
     /// </summary>
-    public RBufferWriter() : base(nint.Zero, true) { }
+    public RBufferWriter() : this(DefaultCapacity) { }
 
     /// <summary>
     /// Manages a pool of <see cref="RBufferWriter"/> instances with a default initial capacity optimized for string table operations.
@@ -42,14 +47,16 @@ public sealed class RBufferWriter : SafeHandle, IRBufferWriter
     /// </summary>
     public RBufferWriter(int capacity) : base(nint.Zero, true)
     {
-        if (capacity > 0)
+        if (capacity <= 0)
         {
-            unsafe
+            capacity = DefaultCapacity;
+        }
+
+        unsafe
+        {
+            SetHandle((nint)NativeMemory.Alloc((nuint)capacity));
             {
-                SetHandle((nint)NativeMemory.Alloc((nuint)capacity));
-                {
-                    _capacity = capacity;
-                }
+                _capacity = capacity;
             }
         }
     }

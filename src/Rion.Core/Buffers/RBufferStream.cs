@@ -82,7 +82,41 @@ public sealed class RBufferStream : Stream
     /// <summary>
     /// Initializes a new instance of the <see cref="RBufferStream"/> class.
     /// </summary>
-    public RBufferStream() { }
+    public RBufferStream() : this(RBufferWriter.DefaultCapacity) { }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="RBufferStream"/> class with the specified capacity.
+    /// </summary>
+    /// <param name="capacity">The capacity to init.</param>
+    public RBufferStream(int capacity)
+    {
+
+        if (capacity <= 0)
+        {
+            capacity = RBufferWriter.DefaultCapacity;
+        }
+
+        unsafe
+        {
+            _handle = ((nint)NativeMemory.Alloc((nuint)capacity));
+            {
+                _capacity = capacity;
+            }
+        }
+    }
+
+    public ReadOnlySpan<byte> GetRawBuffer()
+    {
+        if (IsInvalid)
+        {
+            return default;
+        }
+
+        unsafe
+        {
+            return new ReadOnlySpan<byte>(_handle.ToPointer(), _length);
+        }
+    }
 
     /// <inheritdoc />
     public override void Flush() { }
