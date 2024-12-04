@@ -5,7 +5,9 @@
 // LICENSE file in the root directory of this source tree.
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 using Rion.Core.Metadata;
 
@@ -16,12 +18,12 @@ namespace Rion.Core;
 /// Extends the basic dictionary functionality with specific methods and properties
 /// tailored for managing hashed string data.
 /// </summary>
-public sealed class RStringTable : Dictionary<ulong, string>, IRStringTable, IEquatable<RStringTable>
+public class RStringTable : Dictionary<ulong, string>, IEquatable<RStringTable>, IRStringTable
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="RStringTable" /> class.
     /// </summary>
-    public RStringTable() : this([], RStringTableMetadata.Latest) { }
+    public RStringTable() : this(RStringTableMetadata.Latest, []) { }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="RStringTable" /> class based on the metadata.
@@ -39,21 +41,19 @@ public sealed class RStringTable : Dictionary<ulong, string>, IRStringTable, IEq
     /// <summary>
     /// Initializes a new instance of the <see cref="RStringTable" /> class based on the items collection and metadata.
     /// </summary>
-    /// <param name="collection">The collection of hashes and strings.</param>
     /// <param name="metadata">The metadata to set.</param>
-    public RStringTable(IEnumerable<KeyValuePair<ulong, string>> collection, IRStringTableMetadata metadata) :
-        base(collection) => Metadata = metadata;
+    /// <param name="collection">The collection of hashes and strings.</param>
+    public RStringTable(IRStringTableMetadata metadata, IEnumerable<KeyValuePair<ulong, string>> collection) : base(collection) => Metadata = metadata;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="RStringTable" /> class based on the dictionary and metadata.
     /// </summary>
-    /// <param name="dictionary">The generic collection of key/value pairs.</param>
     /// <param name="metadata">The metadata to set.</param>
-    public RStringTable(IDictionary<ulong, string> dictionary, IRStringTableMetadata metadata) : base(dictionary) =>
-        Metadata = metadata;
+    /// <param name="dictionary">The generic collection of key/value pairs.</param>
+    public RStringTable(IRStringTableMetadata metadata, IDictionary<ulong, string> dictionary) : base(dictionary) => Metadata = metadata;
 
     /// <inheritdoc />
-    public bool Equals(RStringTable? other) => this.ItemsEquals(other) && Metadata.Equals(other?.Metadata);
+    public bool Equals(RStringTable? other) => other is not null && this.SequenceEqual(other) && Metadata.Equals(other.Metadata);
 
     /// <inheritdoc />
     public string this[string name]
@@ -70,4 +70,11 @@ public sealed class RStringTable : Dictionary<ulong, string>, IRStringTable, IEq
 
     /// <inheritdoc />
     public override int GetHashCode() => HashCode.Combine(Metadata, this);
+
+    public readonly record struct RecordRStringTable(IRStringTableMetadata Metadata, IEnumerable<KeyValuePair<ulong, string>> Entries) : IRStringTable
+    {
+        public readonly IEnumerator<KeyValuePair<ulong, string>> GetEnumerator() => Entries.GetEnumerator();
+
+        readonly IEnumerator IEnumerable.GetEnumerator() => Entries.GetEnumerator();
+    }
 }
