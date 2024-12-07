@@ -6,6 +6,8 @@
 
 using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
+using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
@@ -52,4 +54,8 @@ internal static class Extensions
     public static ref char GetRawStringData(this string s)
         //  Unwrap the readonly
         => ref Unsafe.AsRef(in s.GetPinnableReference());
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool TryParse<T>([NotNullWhen(true)] this string? s, out T result) where T : struct, INumberBase<T>
+        => T.TryParse(s, NumberStyles.HexNumber, CultureInfo.CurrentCulture, out result);
 }

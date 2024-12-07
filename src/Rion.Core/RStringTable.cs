@@ -71,10 +71,23 @@ public class RStringTable : Dictionary<ulong, string>, IEquatable<RStringTable>,
     /// <inheritdoc />
     public override int GetHashCode() => HashCode.Combine(Metadata, this);
 
+    /// <summary>
+    /// Represents a record of a string table with metadata and entries.
+    /// </summary>
+    /// <param name="Metadata">The metadata of the string table.</param>
+    /// <param name="Entries">The entries of the string table.</param>
     public readonly record struct RecordRStringTable(IRStringTableMetadata Metadata, IEnumerable<KeyValuePair<ulong, string>> Entries) : IRStringTable
     {
+        /// <summary>
+        /// Gets an enumerator for the entries of the string table.
+        /// </summary>
+        /// <returns>An enumerator for the entries.</returns>
         public readonly IEnumerator<KeyValuePair<ulong, string>> GetEnumerator() => Entries.GetEnumerator();
 
+        /// <summary>
+        /// Gets an enumerator for the entries of the string table.
+        /// </summary>
+        /// <returns>An enumerator for the entries.</returns>
         readonly IEnumerator IEnumerable.GetEnumerator() => Entries.GetEnumerator();
     }
 }
