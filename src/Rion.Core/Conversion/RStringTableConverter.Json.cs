@@ -41,7 +41,7 @@ public partial class RStringTableConverter
 
             // Read the metadata
             var metadata = TryReadMetadata(jsonDocument.RootElement) ?? RStringTableMetadata.Latest;
-            var stringTable = new RStringTable(metadata, entries.EnumerateObject().Count());
+            var stringTable = RStringTable.Create(metadata, entries.EnumerateObject().Count());
             {
                 foreach (var jsonObject in entries.EnumerateObject())
                 {

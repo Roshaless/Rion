@@ -55,8 +55,10 @@ public static class RHashtable
     /// <returns>The names of the strings.</returns>
     private static IEnumerable<string> GetStringNames<T>(T strings) where T : IEnumerable<string>
     {
+#pragma warning disable format
         return from line in strings let index = line.IndexOf(' ')
                select index == -1 ? line : line[(index + 1)..]
                into hashName select hashName.ToLowerInvariant();
+#pragma warning restore format
     }
 }

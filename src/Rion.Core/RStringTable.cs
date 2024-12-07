@@ -55,7 +55,10 @@ public class RStringTable : Dictionary<ulong, string>, IEquatable<RStringTable>,
     /// <inheritdoc />
     public bool Equals(RStringTable? other) => other is not null && this.SequenceEqual(other) && Metadata.Equals(other.Metadata);
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Gets or sets the string value associated with the specified name of the hash.
+    /// </summary>
+    /// <param name="name">The name of the hash.</param>
     public string this[string name]
     {
         get => this[Metadata.HashAlgorithm.Hash(name)];
@@ -76,7 +79,7 @@ public class RStringTable : Dictionary<ulong, string>, IEquatable<RStringTable>,
     /// </summary>
     /// <param name="Metadata">The metadata of the string table.</param>
     /// <param name="Entries">The entries of the string table.</param>
-    public readonly record struct RecordRStringTable(IRStringTableMetadata Metadata, IEnumerable<KeyValuePair<ulong, string>> Entries) : IRStringTable
+    private readonly record struct RecordRStringTable(IRStringTableMetadata Metadata, IEnumerable<KeyValuePair<ulong, string>> Entries) : IRStringTable
     {
         /// <summary>
         /// Gets an enumerator for the entries of the string table.
@@ -89,5 +92,68 @@ public class RStringTable : Dictionary<ulong, string>, IEquatable<RStringTable>,
         /// </summary>
         /// <returns>An enumerator for the entries.</returns>
         readonly IEnumerator IEnumerable.GetEnumerator() => Entries.GetEnumerator();
+    }
+
+    /// <summary>
+    /// Creates a new instance of the <see cref="RStringTable" /> class.
+    /// </summary>
+    /// <returns>A new instance of the <see cref="RStringTable" /> class.</returns>
+    public static RStringTable Create()
+    {
+        return new RStringTable();
+    }
+
+    /// <summary>
+    /// Creates a new instance of the <see cref="RStringTable" /> class with the specified metadata.
+    /// </summary>
+    /// <param name="metadata">The metadata to set.</param>
+    /// <returns>A new instance of the <see cref="RStringTable" /> class.</returns>
+    public static RStringTable Create(IRStringTableMetadata metadata)
+    {
+        return new RStringTable(metadata);
+    }
+
+    /// <summary>
+    /// Creates a new instance of the <see cref="RStringTable" /> class with the specified metadata and capacity.
+    /// </summary>
+    /// <param name="metadata">The metadata to set.</param>
+    /// <param name="capacity">The size of collection to init.</param>
+    /// <returns>A new instance of the <see cref="RStringTable" /> class.</returns>
+    public static RStringTable Create(IRStringTableMetadata metadata, int capacity)
+    {
+        return new RStringTable(metadata, capacity);
+    }
+
+    /// <summary>
+    /// Creates a new instance of the <see cref="RStringTable" /> class with the specified metadata and collection.
+    /// </summary>
+    /// <param name="metadata">The metadata to set.</param>
+    /// <param name="collection">The collection of hashes and strings.</param>
+    /// <returns>A new instance of the <see cref="RStringTable" /> class.</returns>
+    public static RStringTable Create(IRStringTableMetadata metadata, IEnumerable<KeyValuePair<ulong, string>> collection)
+    {
+        return new RStringTable(metadata, collection);
+    }
+
+    /// <summary>
+    /// Creates a new instance of the <see cref="RStringTable" /> class with the specified metadata and dictionary.
+    /// </summary>
+    /// <param name="metadata">The metadata to set.</param>
+    /// <param name="dictionary">The generic collection of key/value pairs.</param>
+    /// <returns>A new instance of the <see cref="RStringTable" /> class.</returns>
+    public static RStringTable Create(IRStringTableMetadata metadata, IDictionary<ulong, string> dictionary)
+    {
+        return new RStringTable(metadata, dictionary);
+    }
+
+    /// <summary>
+    /// Creates a record of the string table with metadata and entries.
+    /// </summary>
+    /// <param name="metadata">The metadata of the string table.</param>
+    /// <param name="entries">The entries of the string table.</param>
+    /// <returns>A record of the string table.</returns>
+    public static IRStringTable CreateRecord(IRStringTableMetadata metadata, IEnumerable<KeyValuePair<ulong, string>> entries)
+    {
+        return new RecordRStringTable(metadata, entries);
     }
 }
