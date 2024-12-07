@@ -121,7 +121,7 @@ public sealed partial class RStringTableWriter : IDisposable
             WriteLegacyFontConfigMetadata(metadata as ILegacyFontConfigMetadata);
         }
 
-        _bufferWriter.WriteValue(_stringTable.Count);
+        _bufferWriter.WriteValue(_stringTable.Count());
 
         var hashAlgorithm = metadata.HashAlgorithm;
         {
