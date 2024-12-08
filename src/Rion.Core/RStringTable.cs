@@ -4,10 +4,8 @@
 // This source code is distributed under an MIT license.
 // LICENSE file in the root directory of this source tree.
 
-using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 
 using Rion.Core.Metadata;
 
@@ -18,7 +16,7 @@ namespace Rion.Core;
 /// Extends the basic dictionary functionality with specific methods and properties
 /// tailored for managing hashed string data.
 /// </summary>
-public class RStringTable : Dictionary<ulong, string>, IEquatable<RStringTable>, IRStringTable
+public class RStringTable : Dictionary<ulong, string>, IRStringTable
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="RStringTable" /> class.
@@ -52,9 +50,6 @@ public class RStringTable : Dictionary<ulong, string>, IEquatable<RStringTable>,
     /// <param name="dictionary">The generic collection of key/value pairs.</param>
     public RStringTable(IRStringTableMetadata metadata, IDictionary<ulong, string> dictionary) : base(dictionary) => Metadata = metadata;
 
-    /// <inheritdoc />
-    public bool Equals(RStringTable? other) => other is not null && this.SequenceEqual(other) && Metadata.Equals(other.Metadata);
-
     /// <summary>
     /// Gets or sets the string value associated with the specified name of the hash.
     /// </summary>
@@ -68,12 +63,6 @@ public class RStringTable : Dictionary<ulong, string>, IEquatable<RStringTable>,
     /// <inheritdoc />
     public IRStringTableMetadata Metadata { get; }
 
-    /// <inheritdoc />
-    public override bool Equals(object? obj) => Equals(obj as RStringTable);
-
-    /// <inheritdoc />
-    public override int GetHashCode() => HashCode.Combine(Metadata, this);
-
     /// <summary>
     /// Represents a record of a string table with metadata and entries.
     /// </summary>
@@ -85,13 +74,13 @@ public class RStringTable : Dictionary<ulong, string>, IEquatable<RStringTable>,
         /// Gets an enumerator for the entries of the string table.
         /// </summary>
         /// <returns>An enumerator for the entries.</returns>
-        public readonly IEnumerator<KeyValuePair<ulong, string>> GetEnumerator() => Entries.GetEnumerator();
+        public IEnumerator<KeyValuePair<ulong, string>> GetEnumerator() => Entries.GetEnumerator();
 
         /// <summary>
         /// Gets an enumerator for the entries of the string table.
         /// </summary>
         /// <returns>An enumerator for the entries.</returns>
-        readonly IEnumerator IEnumerable.GetEnumerator() => Entries.GetEnumerator();
+        IEnumerator IEnumerable.GetEnumerator() => Entries.GetEnumerator();
     }
 
     /// <summary>

@@ -412,6 +412,61 @@ public static class RStringTableExtensions
     }
 
     /// <summary>
+    /// Compare two <see cref="IRStringTable"/>s for equality.
+    /// </summary>
+    /// <param name="x">The first <see cref="IRStringTable"/> to compare.</param>
+    /// <param name="y">The second <see cref="IRStringTable"/> to compare.</param>
+    /// <returns><see langword="true"/> if the two <see cref="IRStringTable"/>s are equal; otherwise, <see langword="false"/>.</returns>
+    public static bool ItemsEquals(
+        [NotNullWhen(true)] this IRStringTable? x,
+        [NotNullWhen(true)] IRStringTable? y)
+    {
+        if (ReferenceEquals(x, y))
+            return true;
+
+        if (x == null || y == null)
+            return false;
+
+        if (x is ICollection<KeyValuePair<ulong, string>> collection &&
+            y is ICollection<KeyValuePair<ulong, string>> collection2)
+            if (collection.Count != collection2.Count) return false;
+
+        using var enumerator1 = x.OrderBy(static x => x.Key).GetEnumerator();
+        using var enumerator2 = y.OrderBy(static y => y.Key).GetEnumerator();
+
+        while (enumerator1.MoveNext())
+        {
+            if (!enumerator2.MoveNext())
+                return false;
+
+            var pair1 = enumerator1.Current;
+            var pair2 = enumerator2.Current;
+
+            if (pair1.Key != pair2.Key)
+                return false;
+
+            if (!pair1.Value.Equals(pair2.Value))
+                return false;
+        }
+
+        // Ensure same count of items
+        return !enumerator2.MoveNext();
+    }
+
+    /// <summary>
+    /// Compare two <see cref="IRStringTable"/>s for equality.
+    /// </summary>
+    /// <param name="left">The first <see cref="IRStringTable"/> to compare.</param>
+    /// <param name="right">The second <see cref="IRStringTable"/> to compare.</param>
+    /// <returns><see langword="true"/> if the two <see cref="IRStringTable"/>s are equal; otherwise, <see langword="false"/>.</returns>
+    public static bool Equals(
+        [NotNullWhen(true)] this IRStringTable? left,
+        [NotNullWhen(true)] IRStringTable? right)
+    {
+        return left.ItemsEquals(right) && left.Metadata.Equals(right.Metadata);
+    }
+
+    /// <summary>
     /// Calculate the content offset of the specified <see cref="IRStringTable"/>.
     /// </summary>
     /// <param name="source">The source to calculate the offset of.</param>
