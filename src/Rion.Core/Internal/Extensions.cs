@@ -43,6 +43,14 @@ internal static class Extensions
         where T : struct => Unsafe.ReadUnaligned<T>(ref source.At(offset));
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool IsNull<T>([NotNullWhen(false)] this T value)
+        => value is null;
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool IsNotNull<T>([NotNullWhen(true)] this T value)
+        => value is not null;
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool IsNullOrWhiteSpace([NotNullWhen(true)] this string? s)
         => string.IsNullOrWhiteSpace(s);
 
