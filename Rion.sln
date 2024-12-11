@@ -1,4 +1,4 @@
-
+﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.12.35323.107
@@ -11,10 +11,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rion.Core", "src\Rion.Core\Rion.Core.csproj", "{175A0AFF-8101-47EF-A56A-FC2425D18CA8}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rion.Cli", "src\Rion.Cli\Rion.Cli.csproj", "{303D0C95-5E4C-4C05-892F-CA85736CB260}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rion.App.UI", "src\Rion.App.UI\Rion.App.UI.csproj", "{6B8A7815-7AC1-4A5A-A2D5-113403FA363E}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rion.App", "src\Rion.App\Rion.App.csproj", "{DB6AA90C-AEDD-45D4-884A-F5EEF068EF6D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -30,14 +26,6 @@ Global
 		{303D0C95-5E4C-4C05-892F-CA85736CB260}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{303D0C95-5E4C-4C05-892F-CA85736CB260}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{303D0C95-5E4C-4C05-892F-CA85736CB260}.Release|Any CPU.Build.0 = Release|Any CPU
-		{6B8A7815-7AC1-4A5A-A2D5-113403FA363E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6B8A7815-7AC1-4A5A-A2D5-113403FA363E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6B8A7815-7AC1-4A5A-A2D5-113403FA363E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6B8A7815-7AC1-4A5A-A2D5-113403FA363E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{DB6AA90C-AEDD-45D4-884A-F5EEF068EF6D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{DB6AA90C-AEDD-45D4-884A-F5EEF068EF6D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{DB6AA90C-AEDD-45D4-884A-F5EEF068EF6D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{DB6AA90C-AEDD-45D4-884A-F5EEF068EF6D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
