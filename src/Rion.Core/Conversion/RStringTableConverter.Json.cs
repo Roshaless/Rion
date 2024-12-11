@@ -29,18 +29,25 @@ public partial class RStringTableConverter
         private const string JsonVersionName = "version";
 
         /// <inheritdoc />
-        public override RStringTable? Convert(ReadOnlySpan<byte> bytes)
+        public override RStringTable Convert(ReadOnlySpan<byte> bytes)
         {
-            // Read the JSON.
+            // Create a reader to read the JSON
             var reader = new Utf8JsonReader(bytes, new() { CommentHandling = JsonCommentHandling.Skip });
-            if (JsonDocument.TryParseValue(ref reader, out var jsonDocument) is false) return null;
 
-            // Read entries
+            // Read the JSON document
+            var jsonDocument = JsonDocument.ParseValue(ref reader);
+
+            // Check if the JSON has entries.
             var hasEntries = jsonDocument.RootElement.TryGetProperty(JsonEntriesName, out var entries);
-            if (hasEntries is false && entries.ValueKind != JsonValueKind.Object) return null;
+            if (hasEntries is false || entries.ValueKind != JsonValueKind.Object)
+            {
+                throw new InvalidOperationException("Invalid JSON format.");
+            }
 
             // Read the metadata
             var metadata = TryReadMetadata(jsonDocument.RootElement) ?? RStringTableMetadata.Latest;
+
+            // Create the string table
             var stringTable = RStringTable.Create(metadata, entries.EnumerateObject().Count());
             {
                 foreach (var jsonObject in entries.EnumerateObject())

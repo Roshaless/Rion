@@ -67,7 +67,7 @@ public abstract partial class RStringTableConverter
     /// </summary>
     /// <param name="bytes">The byte array to convert.</param>
     /// <returns>The converted object.</returns>
-    internal abstract object? ConvertCore(ReadOnlySpan<byte> bytes);
+    internal abstract object ConvertCore(ReadOnlySpan<byte> bytes);
 
     /// <summary>
     /// Writes the specified object to the specified stream.

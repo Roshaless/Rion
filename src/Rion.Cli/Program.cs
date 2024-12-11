@@ -41,11 +41,7 @@ internal static class Program
                     }
                     else
                     {
-                        // Try to read as json
-
-                        var rst = RConvert.FromJsonFile(file);
-                        if (rst != null) toWriteRst.Add((file, rst));
-                        else Console.WriteLine($"Unsupported file type: {file}.");
+                        toWriteRst.Add((file, RConvert.FromJsonFile(file)));
                     }
                 }
                 catch

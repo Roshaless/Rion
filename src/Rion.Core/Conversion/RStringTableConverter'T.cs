@@ -25,7 +25,7 @@ public abstract class RStringTableConverter<TSource> : RStringTableConverter whe
     /// </summary>
     /// <param name="bytes">The byte array to convert.</param>
     /// <returns>The converted string table.</returns>
-    public abstract TSource? Convert(ReadOnlySpan<byte> bytes);
+    public abstract TSource Convert(ReadOnlySpan<byte> bytes);
 
     /// <summary>
     /// Writes the specified string table to the specified stream.
@@ -39,7 +39,7 @@ public abstract class RStringTableConverter<TSource> : RStringTableConverter whe
     /// </summary>
     /// <param name="bytes">The byte array to convert.</param>
     /// <returns>The converted string table.</returns>
-    internal override object? ConvertCore(ReadOnlySpan<byte> bytes) => Convert(bytes);
+    internal override object ConvertCore(ReadOnlySpan<byte> bytes) => Convert(bytes);
 
     /// <summary>
     /// Writes the specified string table to the specified stream.
