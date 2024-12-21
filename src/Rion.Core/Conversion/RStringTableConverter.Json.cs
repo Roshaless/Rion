@@ -52,14 +52,11 @@ public partial class RStringTableConverter
             {
                 foreach (var jsonObject in entries.EnumerateObject())
                 {
-                    var property = jsonObject.Name;
-                    if (property.IsNullOrWhiteSpace())
-                        continue;
+                    var property = jsonObject.Name.AsSpan();
+                    if (property.StartEndWith('{', '}'))
+                        property = property.Slice(1, property.Length - 2);
 
-                    if (property.StartsWith('{'))
-                        property = property.Substring(1, property.Length - 2);
-
-                    if (!property.TryParse<ulong>(out var hash))
+                    if (!property.TryParseHex<ulong>(out var hash))
                         hash = metadata.HashAlgorithm.Hash(property);
 
                     stringTable[hash] = jsonObject.Value.ToString();

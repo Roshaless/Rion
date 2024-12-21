@@ -46,17 +46,17 @@ public abstract class RSTHashAlgorithmBase : IRSTHashAlgorithm
     public RSTHashTrimmingOption TrimmingOption { get; }
 
     /// <inheritdoc />
-    public virtual ulong Hash(string toHash)
+    public virtual ulong Hash(ReadOnlySpan<char> toHash)
         => Hash(toHash, Encoding.UTF8, CultureInfo.CurrentCulture);
 
     /// <inheritdoc />
-    public virtual ulong Hash(string toHash, Encoding encoding)
+    public virtual ulong Hash(ReadOnlySpan<char> toHash, Encoding encoding)
         => Hash(toHash, encoding, CultureInfo.CurrentCulture);
 
     /// <inheritdoc />
-    public virtual ulong Hash(string toHash, Encoding? encoding, CultureInfo? culture)
+    public virtual ulong Hash(ReadOnlySpan<char> toHash, Encoding? encoding, CultureInfo? culture)
     {
-        if (string.IsNullOrWhiteSpace(toHash))
+        if (toHash.Length == 0)
         {
             return Hash(default(ReadOnlySpan<byte>));
         }
@@ -64,14 +64,9 @@ public abstract class RSTHashAlgorithmBase : IRSTHashAlgorithm
         encoding ??= Encoding.UTF8;
         culture ??= CultureInfo.CurrentCulture;
 
-        if (toHash.Length >= 256)
-        {
-            return Hash(encoding.GetBytes(toHash.ToLower(culture)));
-        }
-
         Span<char> destination = stackalloc char[toHash.Length];
         {
-            var written = toHash.AsSpan().ToLower(destination, culture);
+            var written = toHash.ToLower(destination, culture);
             Debug.Assert(written == toHash.Length);
         }
 
@@ -83,15 +78,15 @@ public abstract class RSTHashAlgorithmBase : IRSTHashAlgorithm
     public abstract ulong Hash(ReadOnlySpan<byte> source);
 
     /// <inheritdoc />
-    public virtual ulong HashWithOffset(string toHash, long offset)
+    public virtual ulong HashWithOffset(ReadOnlySpan<char> toHash, long offset)
         => HashWithOffset(toHash, offset, Encoding.UTF8, CultureInfo.CurrentCulture);
 
     /// <inheritdoc />
-    public virtual ulong HashWithOffset(string toHash, long offset, Encoding encoding)
+    public virtual ulong HashWithOffset(ReadOnlySpan<char> toHash, long offset, Encoding encoding)
         => HashWithOffset(toHash, offset, encoding, CultureInfo.CurrentCulture);
 
     /// <inheritdoc />
-    public virtual ulong HashWithOffset(string toHash, long offset, Encoding encoding, CultureInfo cultureInfo)
+    public virtual ulong HashWithOffset(ReadOnlySpan<char> toHash, long offset, Encoding encoding, CultureInfo cultureInfo)
     {
         ArgumentOutOfRangeException.ThrowIfNegative(offset);
         {

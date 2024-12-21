@@ -64,6 +64,18 @@ internal static class Extensions
         => ref Unsafe.AsRef(in s.GetPinnableReference());
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool TryParse<T>([NotNullWhen(true)] this string? s, out T result) where T : struct, INumberBase<T>
-        => T.TryParse(s, NumberStyles.HexNumber, CultureInfo.CurrentCulture, out result);
+    public static bool StartEndWith<T>(this ReadOnlySpan<T> span, T start, T end) where T : struct, IEquatable<T>
+    {
+        if (span.Length == 0)
+            return false;
+
+        ref var first = ref span.AsReference();
+        ref var last = ref At(ref first, span.Length - 1);
+
+        return first.Equals(start) && last.Equals(end);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool TryParseHex<T>([NotNullWhen(true)] this ReadOnlySpan<char> s, out T result)
+        where T : struct, INumberBase<T> => T.TryParse(s, NumberStyles.HexNumber, null, out result);
 }

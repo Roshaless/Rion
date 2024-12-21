@@ -38,16 +38,16 @@ public interface IRSTHashAlgorithm
     /// </summary>
     /// <param name="toHash">The string to be hashed.</param>
     /// <returns>The computed hash value as an unsigned 64-bit integer.</returns>
-    ulong Hash(string toHash);
+    ulong Hash(ReadOnlySpan<char> toHash);
 
     /// <summary>
     /// Computes the rst hash of the string using the specified character encoding.
-    /// This method extends the <see cref="Hash(string)"/> by allowing custom encodings.
+    /// This method extends the <see cref="Hash(ReadOnlySpan{char})"/> by allowing custom encodings.
     /// </summary>
     /// <param name="toHash">The string to hash.</param>
     /// <param name="encoding">The character encoding to use when converting the string to bytes.</param>
     /// <returns>The computed rst hash value as an unsigned 64-bit integer.</returns>
-    ulong Hash(string toHash, Encoding encoding);
+    ulong Hash(ReadOnlySpan<char> toHash, Encoding encoding);
 
     /// <summary>
     /// Computes the hash value for the provided string using the specified encoding and culture.
@@ -57,7 +57,7 @@ public interface IRSTHashAlgorithm
     /// <param name="encoding">The character encoding to use for converting the string. If null, UTF8 is used.</param>
     /// <param name="culture">Specifies culture-specific casing rules for string normalization. If null, current culture is used.</param>
     /// <returns>The computed hash value as an unsigned 64-bit integer, adjusted with optional bit masking based on <see cref="BitsMaskType"/>.</returns>
-    ulong Hash(string toHash, Encoding encoding, CultureInfo culture);
+    ulong Hash(ReadOnlySpan<char> toHash, Encoding encoding, CultureInfo culture);
 
     /// <summary>
     /// Computes the rst hash of the provided data without any encoding or culture consideration,
@@ -75,7 +75,7 @@ public interface IRSTHashAlgorithm
     /// <param name="toHash">The string to hash.</param>
     /// <param name="offset">The offset value to be used in the hash computation, modifying the result.</param>
     /// <returns>The computed rst hash value adjusted by the specified offset.</returns>
-    ulong HashWithOffset(string toHash, long offset);
+    ulong HashWithOffset(ReadOnlySpan<char> toHash, long offset);
 
     /// <summary>
     /// Computes the RST hash of a string with an applied offset, considering the specified encoding.
@@ -85,7 +85,7 @@ public interface IRSTHashAlgorithm
     /// <param name="offset">The offset value to incorporate into the hash computation.</param>
     /// <param name="encoding">Character encoding used for the string conversion.</param>
     /// <returns>The computed rst hash value adjusted by the specified offset.</returns>
-    ulong HashWithOffset(string toHash, long offset, Encoding encoding);
+    ulong HashWithOffset(ReadOnlySpan<char> toHash, long offset, Encoding encoding);
 
     /// <summary>
     /// Computes the rst hash of the string with an additional offset value,
@@ -96,7 +96,7 @@ public interface IRSTHashAlgorithm
     /// <param name="encoding">Character encoding used for the string conversion.</param>
     /// <param name="culture">Cultural context applied for string processing.</param>
     /// <returns>The computed rst hash value adjusted by the specified offset.</returns>
-    ulong HashWithOffset(string toHash, long offset, Encoding encoding, CultureInfo culture);
+    ulong HashWithOffset(ReadOnlySpan<char> toHash, long offset, Encoding encoding, CultureInfo culture);
 
     /// <summary>
     /// Computes the rst hash of the bytes with an additional offset value.
