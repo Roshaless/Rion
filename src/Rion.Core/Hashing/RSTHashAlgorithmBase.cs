@@ -18,10 +18,10 @@ namespace Rion.Core.Hashing;
 public abstract class RSTHashAlgorithmBase : IRSTHashAlgorithm
 {
     /// <summary>
-    ///
+    /// Initializes a new instance of the <see cref="RSTHashAlgorithmBase"/> class with the specified bits mask type and trimming option.
     /// </summary>
-    /// <param name="bitsMaskType"></param>
-    /// <param name="trimmingOption"></param>
+    /// <param name="bitsMaskType">The bits mask type to be used for hashing.</param>
+    /// <param name="trimmingOption">The trimming option to be used for hashing.</param>
     protected RSTHashAlgorithmBase(RSTHashBitsMaskType bitsMaskType, RSTHashTrimmingOption trimmingOption = default)
     {
         Debug.Assert(Enum.IsDefined(bitsMaskType));
