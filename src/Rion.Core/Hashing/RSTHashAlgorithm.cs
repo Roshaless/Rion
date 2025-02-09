@@ -14,20 +14,28 @@ namespace Rion.Core.Hashing;
 /// </summary>
 public static class RSTHashAlgorithm
 {
+    /// <inheritdoc cref="V5_2T1"/>
+    public static IRSTHashAlgorithm Latest => V5_2T1;
+
     /// <summary>
     /// Represents a predefined instance of RSTHashAlgorithm configured with BitsMask40, for v2 and v3.
     /// </summary>
-    public static IRSTHashAlgorithm LegacyV2V3 { get; } = new LegacyRSTHashAlgorithm(RSTHashBitsMaskType.Mask40);
+    public static IRSTHashAlgorithm V2_V3 { get; } = new LegacyRSTHashAlgorithm(RSTHashBitsMaskType.Mask40);
 
     /// <summary>
     /// Represents a predefined instance of RSTHashAlgorithm configured with BitsMask39, for v4 and v5.
     /// </summary>
-    public static IRSTHashAlgorithm LegacyV4V5 { get; } = new LegacyRSTHashAlgorithm(RSTHashBitsMaskType.Mask39);
+    public static IRSTHashAlgorithm V4_V5 { get; } = new LegacyRSTHashAlgorithm(RSTHashBitsMaskType.Mask39);
 
     /// <summary>
     /// Represents a predefined instance of RSTHashAlgorithm configured with BitsMask39 and TrimHigh3BytesWithMaskLow8Bits, for v5+(greater than v14.15).
     /// </summary>
-    public static IRSTHashAlgorithm Latest { get; } = new LatestRSTHashAlgorithm(RSTHashBitsMaskType.Mask39, RSTHashTrimmingOption.TrimHigh3BytesWithMaskLow8Bits);
+    public static IRSTHashAlgorithm V5_1T1 { get; } = new LatestRSTHashAlgorithm(RSTHashBitsMaskType.Mask39, RSTHashTrimmingOption.TrimHigh3BytesWithMaskLow8Bits);
+
+    /// <summary>
+    /// Represents a predefined instance of RSTHashAlgorithm configured with BitsMask38 and TrimHigh3BytesWithMaskLow8Bits, for v5+(greater than v15.2).
+    /// </summary>
+    public static IRSTHashAlgorithm V5_2T1 { get; } = new LatestRSTHashAlgorithm(RSTHashBitsMaskType.Mask38, RSTHashTrimmingOption.TrimHigh3BytesWithMaskLow8Bits);
 
     /// <summary>
     /// Represents a predefined instance of RSTHashAlgorithm configured with BitsMask39, for v5+(greater than v14.15).

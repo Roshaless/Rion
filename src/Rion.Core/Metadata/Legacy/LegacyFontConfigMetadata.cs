@@ -27,7 +27,7 @@ public sealed record LegacyFontConfigMetadata : ILegacyFontConfigMetadata
     private sealed class NullFontConfigMetadata : ILegacyFontConfigMetadata
     {
         /// <inheritdoc />
-        public IRSTHashAlgorithm HashAlgorithm => RSTHashAlgorithm.LegacyV2V3;
+        public IRSTHashAlgorithm HashAlgorithm => RSTHashAlgorithm.V2_V3;
 
         /// <inheritdoc />
         public byte Version => 2;
@@ -42,7 +42,7 @@ public sealed record LegacyFontConfigMetadata : ILegacyFontConfigMetadata
     public LegacyFontConfigMetadata()
     {
         Version = 2;
-        HashAlgorithm = RSTHashAlgorithm.LegacyV2V3;
+        HashAlgorithm = RSTHashAlgorithm.V2_V3;
     }
 
     /// <summary>

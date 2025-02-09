@@ -78,7 +78,16 @@ public abstract class RStringTableReaderProvider
         {
             return version switch
             {
-                5 => RStringTableMetadata.Latest,
+#if Before_v14_15
+                // 9/1/2021 - 14.14
+                5 => RStringTableMetadata.Version5,
+#elif Before_v15_2
+                // 14.15 - 15.1
+                5 => RStringTableMetadata.Version5_1T1,
+#else
+                // 15.2 - Latest
+                5 => RStringTableMetadata.Version5_2T1,
+#endif
                 4 => RStringTableMetadata.Version4,
                 3 => RStringTableMetadata.Version3,
                 _ => throw new NotSupportedException($"Not Supported rst version: {version}")

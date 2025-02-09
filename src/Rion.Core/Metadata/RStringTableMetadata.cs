@@ -15,7 +15,7 @@ namespace Rion.Core.Metadata;
 /// <summary>
 /// Represents the metadata for a string table, including hashing algorithm and version details.
 /// </summary>
-public sealed record RStringTableMetadata : IRStringTableMetadata
+public static class RStringTableMetadata
 {
     /// <summary>
     /// Represents the metadata for version 2, indicating a legacy configuration without a backing font configuration.
@@ -33,15 +33,25 @@ public sealed record RStringTableMetadata : IRStringTableMetadata
     public static readonly IRStringTableMetadata Version4 = new LegacyNoFontConfigMetadata(true);
 
     /// <summary>
-    /// Represents the metadata for version 5 legacy configurations applicable to versions prior to v14.15.
+    /// Represents the metadata for version 5 applicable to versions prior to v14.15.
     /// </summary>
-    public static readonly IRStringTableMetadata Version5Legacy = new LegacyRStringTableMetadata();
+    public static readonly IRStringTableMetadata Version5 = new Metadata(RSTHashAlgorithm.V4_V5, 5);
+
+    /// <summary>
+    ///Represents the metadata for version 5 applicable to v14.15 through v15.2.
+    /// </summary>
+    public static readonly IRStringTableMetadata Version5_1T1 = new Metadata(RSTHashAlgorithm.V5_1T1, 5);
+
+    /// <summary>
+    /// Represents the metadata for version 5 applicable to versions start with v15.2.
+    /// </summary>
+    public static readonly IRStringTableMetadata Version5_2T1 = new Metadata(RSTHashAlgorithm.V5_2T1, 5);
 
     /// <summary>
     /// Points to the most up-to-date version of the string table metadata.
     /// This is used as the default for creating new <see cref="RStringTable"/> instances.
     /// </summary>
-    public static readonly IRStringTableMetadata Latest = new RStringTableMetadata();
+    public static readonly IRStringTableMetadata Latest = Version5_2T1;
 
     /// <summary>
     /// Retrieves the metadata for the specified version.
@@ -101,7 +111,7 @@ public sealed record RStringTableMetadata : IRStringTableMetadata
     {
         metadata = version switch
         {
-            5 => Latest,
+            5 => Version5,
             4 => Version4,
             3 => Version3,
             2 => new LegacyFontConfigMetadata(),
@@ -136,7 +146,7 @@ public sealed record RStringTableMetadata : IRStringTableMetadata
             {
                 Version: 5,
                 HashAlgorithm: { BitsMaskType: RSTHashBitsMaskType.Mask39, TrimmingOption: RSTHashTrimmingOption.None }
-            } => "v5-old",
+            } => "v5",
             {
                 Version: 5,
                 HashAlgorithm:
@@ -144,7 +154,15 @@ public sealed record RStringTableMetadata : IRStringTableMetadata
                     BitsMaskType: RSTHashBitsMaskType.Mask39,
                     TrimmingOption: RSTHashTrimmingOption.TrimHigh3BytesWithMaskLow8Bits
                 }
-            } => "v5",
+            } => "v5-1t1",
+            {
+                Version: 5,
+                HashAlgorithm:
+                {
+                    BitsMaskType: RSTHashBitsMaskType.Mask38,
+                    TrimmingOption: RSTHashTrimmingOption.TrimHigh3BytesWithMaskLow8Bits
+                }
+            } => "v5-2t1",
             _ => null
         };
 
@@ -159,10 +177,18 @@ public sealed record RStringTableMetadata : IRStringTableMetadata
     /// <returns><see langword="true"/> if the metadata was successfully retrieved; otherwise, <see langword="false"/>.</returns>
     public static bool TryGetMetadata([NotNullWhen(true)] string? version, [NotNullWhen(true)] out IRStringTableMetadata? metadata)
     {
-        metadata = version switch
+        if (version is null or { Length: < 1 })
         {
-            "v5-old" => Version5Legacy,
-            "5" or "v5" => Latest,
+            metadata = null;
+            return false;
+        }
+
+        metadata = version.ToLower() switch
+        {
+            "latest" => Latest,
+            "v5-2t1" => Version5_2T1,
+            "v5-1t1" => Version5_1T1,
+            "5" or "v5" => Version5,
             "4" or "v4" => Version4,
             "3" or "v3" => Version3,
             "2" or "v2" => new LegacyFontConfigMetadata(),
@@ -173,27 +199,9 @@ public sealed record RStringTableMetadata : IRStringTableMetadata
     }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="RStringTableMetadata"/> class.
+    /// Represents record and read-only metadata class used to create metadata with different options.
     /// </summary>
-    private RStringTableMetadata() { }
-
-    /// <inheritdoc />
-    public IRSTHashAlgorithm HashAlgorithm => RSTHashAlgorithm.Latest;
-
-    /// <inheritdoc />
-    public byte Version => 5;
-
-    /// <summary>
-    /// Represents the legacy specific metadata for string table configurations used in versions prior to v14.15.
-    /// This class is designed to maintain compatibility with historical system requirements and includes
-    /// details on the hashing algorithm in use during that period.
-    /// </summary>
-    private sealed class LegacyRStringTableMetadata : IRStringTableMetadata
-    {
-        /// <inheritdoc />
-        public IRSTHashAlgorithm HashAlgorithm => RSTHashAlgorithm.LegacyV4V5;
-
-        /// <inheritdoc />
-        public byte Version => 5;
-    }
+    /// <param name="HashAlgorithm">The hash algorithm to set.</param>
+    /// <param name="Version">The version to set.</param>
+    private sealed record Metadata(IRSTHashAlgorithm HashAlgorithm, byte Version) : IRStringTableMetadata { }
 }

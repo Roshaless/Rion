@@ -23,12 +23,12 @@ public sealed record LegacyNoFontConfigMetadata : IRStringTableMetadata
         if (isV4NotV3)
         {
             Version = 4;
-            HashAlgorithm = RSTHashAlgorithm.LegacyV4V5;
+            HashAlgorithm = RSTHashAlgorithm.V4_V5;
         }
         else
         {
             Version = 3;
-            HashAlgorithm = RSTHashAlgorithm.LegacyV2V3;
+            HashAlgorithm = RSTHashAlgorithm.V2_V3;
         }
     }
 

@@ -31,7 +31,7 @@ public static class RStringTableExtensions
     /// <returns>A new <see cref="RStringTable"/> instance.</returns>
     public static RStringTable ToRStringTable(
         this IEnumerable<KeyValuePair<ulong, string>> collection,
-        RStringTableMetadata metadata) => RStringTable.Create(metadata, collection);
+        IRStringTableMetadata metadata) => RStringTable.Create(metadata, collection);
 
     /// <summary>
     /// Converts the given dictionary into a <see cref="RStringTable"/> using the specified metadata.
@@ -41,7 +41,7 @@ public static class RStringTableExtensions
     /// <returns>A new <see cref="RStringTable"/> instance.</returns>
     public static RStringTable ToRStringTable(
         this IDictionary<ulong, string> dictionary,
-        RStringTableMetadata metadata) => RStringTable.Create(metadata, dictionary);
+        IRStringTableMetadata metadata) => RStringTable.Create(metadata, dictionary);
 
     // ======================================================================================
     // ================= Add - <ulong, Any> =================================================
