@@ -71,11 +71,7 @@ public partial class RStringTableConverter
                 if (rootElement.TryGetProperty(JsonVersionName, out var version))
                 {
                     // ReSharper disable once ConvertIfStatementToSwitchStatement
-                    if (version.ValueKind == JsonValueKind.Number)
-                    {
-                        RStringTableMetadata.TryGetMetadata(version.GetInt32(), out metadata);
-                    }
-                    else if (version.ValueKind == JsonValueKind.String)
+                    if (version.ValueKind == JsonValueKind.String)
                     {
                         RStringTableMetadata.TryGetMetadata(version.GetString(), out metadata);
                     }
