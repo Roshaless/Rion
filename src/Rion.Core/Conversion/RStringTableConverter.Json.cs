@@ -115,7 +115,7 @@ public partial class RStringTableConverter
             writer.WriteStartObject();
             {
                 writer.WritePropertyName(JsonVersionName);
-                writer.WriteStringValue(value.Metadata.Version.ToString());
+                writer.WriteStringValue(RStringTableMetadata.GetVersionString(value.Metadata));
 
                 if (value.Metadata is ILegacyFontConfigMetadata legacyMetadata)
                 {
