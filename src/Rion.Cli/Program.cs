@@ -6,70 +6,63 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
-
-using CommandLine;
 
 using Rion.Core;
 using Rion.Core.Hashing;
 
 internal static class Program
 {
-    [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(Options))]
     internal static void Main(string[] args)
     {
-        Parser.Default.ParseArguments<Options>(args).WithParsed(options =>
+        var toWriteRst = new List<(string, IRStringTable)>();
+        var writeToJson = new List<(string, IRStringTable)>();
+
+        foreach (var file in args)
         {
-            var toWriteRst = new List<(string, IRStringTable)>();
-            var writeToJson = new List<(string, IRStringTable)>();
-
-            foreach (var file in options.InputFiles)
+            try
             {
-                try
+                var fileStream = File.OpenRead(file);
+                var firstByte = fileStream.ReadByte();
                 {
-                    var fileStream = File.OpenRead(file);
-                    var firstByte = fileStream.ReadByte();
-                    {
-                        fileStream.Dispose();
-                    }
-
-                    if (firstByte is 0x52)
-                    {
-                        writeToJson.Add((file, RFile.ReadAsRecord(file)));
-                    }
-                    else
-                    {
-                        toWriteRst.Add((file, RConvert.FromJsonFile(file)));
-                    }
+                    fileStream.Dispose();
                 }
-                catch
+
+                if (firstByte is 0x52)
                 {
-                    Console.WriteLine($"Invalid input file: {file}.");
-                    continue;
+                    writeToJson.Add((file, RFile.ReadAsRecord(file)));
+                }
+                else
+                {
+                    toWriteRst.Add((file, RConvert.FromJsonFile(file)));
                 }
             }
-
-            LoadHashes(
-                Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "hashes"),
-                writeToJson.Select(x => x.Item2.Metadata.HashAlgorithm).Distinct().ToArray());
-
-
-            DoConvert(writeToJson, (x =>
+            catch
             {
-                var outputPath = ChangeExtExt(x.Item1, ".json");
-                RConvert.ToJsonFile(outputPath, x.Item2);
-                return outputPath;
-            }));
+                Console.WriteLine($"Invalid input file: {file}.");
+                continue;
+            }
+        }
 
-            DoConvert(toWriteRst, (x =>
-            {
-                var outputPath = ChangeExtExt(x.Item1, ".stringtable");
-                RFile.Write(outputPath, x.Item2);
-                return outputPath;
-            }));
-        });
+        LoadHashes(
+            Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "hashes"),
+            [.. writeToJson.Select(x => x.Item2.Metadata.HashAlgorithm).Distinct()]);
+
+
+        DoConvert(writeToJson, (x =>
+        {
+            var outputPath = ChangeExtExt(x.Item1, ".json");
+            RConvert.ToJsonFile(outputPath, x.Item2);
+            return outputPath;
+        }));
+
+        DoConvert(toWriteRst, (x =>
+        {
+            var outputPath = ChangeExtExt(x.Item1, ".stringtable");
+            RFile.Write(outputPath, x.Item2);
+            return outputPath;
+        }));
     }
 
     static void DoConvert(List<(string, IRStringTable)> collection, Func<(string, IRStringTable), string> convert)
@@ -125,11 +118,5 @@ internal static class Program
     static string ChangeExtExt(string path, string ext)
     {
         return Path.ChangeExtension(Path.GetFullPath(path), ext);
-    }
-
-    public sealed class Options
-    {
-        [Value(0, Required = true, HelpText = "The input files.")]
-        public required IEnumerable<string> InputFiles { get; set; }
     }
 }
