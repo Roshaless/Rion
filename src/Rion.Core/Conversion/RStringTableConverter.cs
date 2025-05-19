@@ -15,19 +15,6 @@ namespace Rion.Core.Conversion;
 public abstract partial class RStringTableConverter
 {
     /// <summary>
-    /// The default json converter.
-    /// </summary>
-    public static RStringTableConverter<RStringTable, IRStringTable> JsonConverter { get; }
-
-    /// <summary>
-    /// Initializes static members of the <see cref="RStringTableConverter"/> class.
-    /// </summary>
-    static RStringTableConverter()
-    {
-        JsonConverter = new JsonConverterImpl();
-    }
-
-    /// <summary>
     /// Initializes a new instance of the <see cref="RStringTableConverter"/> class.
     /// </summary>
     /// <param name="conversionType">The type that the converter converts.</param>

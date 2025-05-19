@@ -10,6 +10,8 @@ using System.IO;
 using System.Linq;
 
 using Rion.Core;
+using Rion.Core.Buffers;
+using Rion.Core.Conversion;
 using Rion.Core.Hashing;
 
 internal static class Program
@@ -29,13 +31,15 @@ internal static class Program
                     fileStream.Dispose();
                 }
 
+                using var scope = RFileBufferScope.CreateFrom(file);
+
                 if (firstByte is 0x52)
                 {
-                    writeToJson.Add((file, RFile.ReadAsRecord(file)));
+                    writeToJson.Add((file, RFile.ReadAsRecord(scope.Span)));
                 }
                 else
                 {
-                    toWriteRst.Add((file, RConvert.FromJsonFile(file)));
+                    toWriteRst.Add((file, scope.Span.ReadRStringTableFromJson()));
                 }
             }
             catch
@@ -52,14 +56,17 @@ internal static class Program
 
         DoConvert(writeToJson, (x =>
         {
-            var outputPath = ChangeExtExt(x.Item1, ".json");
-            RConvert.ToJsonFile(outputPath, x.Item2);
+            var outputPath = ChangeExt(x.Item1, ".json");
+            {
+                x.Item2.WriteToFile(outputPath);
+            }
+
             return outputPath;
         }));
 
         DoConvert(toWriteRst, (x =>
         {
-            var outputPath = ChangeExtExt(x.Item1, ".stringtable");
+            var outputPath = ChangeExt(x.Item1, ".stringtable");
             RFile.Write(outputPath, x.Item2);
             return outputPath;
         }));
@@ -69,16 +76,16 @@ internal static class Program
     {
         foreach (var item in collection)
         {
-            Console.WriteLine($"input: {item.Item1}");
+            Console.WriteLine($"Input: {item.Item1}");
 
             try
             {
                 var outputPath = convert(item);
-                Console.WriteLine($"output: {outputPath}");
+                Console.WriteLine($"Output: {outputPath}");
             }
             catch (Exception e)
             {
-                Console.WriteLine($"error: {e.Message}");
+                Console.WriteLine($"Error: {e.Message}");
             }
         }
     }
@@ -115,7 +122,7 @@ internal static class Program
         }
     }
 
-    static string ChangeExtExt(string path, string ext)
+    static string ChangeExt(string path, string ext)
     {
         return Path.ChangeExtension(Path.GetFullPath(path), ext);
     }

@@ -21,7 +21,7 @@ namespace Rion.Core;
 /// <summary>
 /// Provides extension methods for <see cref="IRStringTable"/>.
 /// </summary>
-public static class RStringTableExtensions
+public static partial class RStringTableExtensions
 {
     /// <summary>
     /// Converts the given collection into a <see cref="RStringTable"/> using the specified metadata.

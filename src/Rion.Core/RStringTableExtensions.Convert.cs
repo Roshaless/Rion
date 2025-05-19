@@ -16,10 +16,7 @@ using Rion.Core.Internal;
 
 namespace Rion.Core;
 
-/// <summary>
-/// Contains methods for converting between different string table formats.
-/// </summary>
-public static partial class RConvert
+public static partial class RStringTableExtensions
 {
     /// <summary>
     /// Reads a string table from a byte array using a specified converter.
@@ -28,7 +25,7 @@ public static partial class RConvert
     /// <param name="converter">The converter to use for converting the byte array.</param>
     /// <typeparam name="T">The type of the string table to convert.</typeparam>
     /// <returns>The string table converted from the byte array, or <see langword="null"/> if an error occurs.</returns>
-    public static T From<T>(ReadOnlySpan<byte> bytes, RStringTableConverter converter) where T : class, IRStringTable
+    public static T FromBytesToStringTable<T>(this ReadOnlySpan<byte> bytes, RStringTableConverter converter) where T : class, IRStringTable
     {
         ArgumentNullException.ThrowIfNull(converter);
 
@@ -38,13 +35,13 @@ public static partial class RConvert
     /// <summary>
     /// Reads a string table from a file using a specified converter.
     /// </summary>
-    /// <param name="path">The path of the file to read.</param>
+    /// <param name="stream">The stream of the file to read.</param>
     /// <param name="converter">The converter to use for reading the string table.</param>
     /// <typeparam name="T">The type of the string table to read.</typeparam>
     /// <returns>The string table read from the file, or null if an error occurs.</returns>
-    public static T FromFile<T>(string path, RStringTableConverter converter) where T : class, IRStringTable
+    public static T From<T>(Stream stream, RStringTableConverter converter) where T : class, IRStringTable
     {
-        ArgumentException.ThrowIfNullOrEmpty(path);
+        ArgumentNullException.ThrowIfNull(stream);
         ArgumentNullException.ThrowIfNull(converter);
 
         using var scope = RFileBufferScope.CreateFrom(path);
@@ -86,6 +83,7 @@ public static partial class RConvert
             converter.WriteCore(stream, value);
         }
     }
+
     /// <summary>
     /// Tries to read a string table from a byte array using a specified converter.
     /// </summary>
