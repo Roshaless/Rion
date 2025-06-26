@@ -16,20 +16,30 @@ using Rion.Core.Metadata.Legacy;
 
 #pragma warning disable IDE0130
 
-namespace Rion.Core.Conversion;
+namespace Rion.Core.Serialization;
 
 /// <summary>
-/// A converter that can convert rst files to json.
+/// Provides a JSON converter for serializing and deserializing <see cref="RStringTable"/> objects.
 /// </summary>
+/// <remarks>
+/// This converter handles the serialization and deserialization of <see cref="RStringTable"/> instances,
+/// including their metadata and entries. It ensures compatibility with the expected JSON structure,
+/// which includes properties for version, configuration, and entries.
+/// </remarks>
 public sealed class RStringTableJsonConverter : RStringTableConverter<RStringTable, IRStringTable>
 {
     /// <summary>
-    /// Lazy instance of the json converter.
+    /// Provides a thread-safe, lazily initialized instance of <see cref="RStringTableConverter{TTable, TInterface}"/>
+    /// for converting between <see cref="RStringTable"/> and <see cref="IRStringTable"/>.
     /// </summary>
+    /// <remarks>
+    /// The <see cref="Lazy{T}"/> ensures that the instance is created only when it is first
+    /// accessed, making it efficient for scenarios where the converter may not always be needed.
+    /// </remarks>
     private static readonly Lazy<RStringTableConverter<RStringTable, IRStringTable>> s_lazy = new();
 
     /// <summary>
-    /// The default instance of the json converter.
+    /// Gets the singleton instance of the <see cref="RStringTableConverter{RStringTable, IRStringTable}"/> class.
     /// </summary>
     public static RStringTableConverter<RStringTable, IRStringTable> Instance => s_lazy.Value;
 
@@ -39,7 +49,7 @@ public sealed class RStringTableJsonConverter : RStringTableConverter<RStringTab
     private const string JsonVersionName = "version";
 
     /// <inheritdoc />
-    public override RStringTable Convert(ReadOnlySpan<byte> bytes)
+    public override RStringTable Deserialize(ReadOnlySpan<byte> bytes)
     {
         // Create a reader to read the JSON
         var reader = new Utf8JsonReader(bytes, new() { CommentHandling = JsonCommentHandling.Skip });
@@ -114,7 +124,7 @@ public sealed class RStringTableJsonConverter : RStringTableConverter<RStringTab
     }
 
     /// <inheritdoc />
-    public override void Write(Stream stream, IRStringTable value)
+    public override void Serialize(Stream stream, IRStringTable stringTable)
     {
         var writer = new Utf8JsonWriter(stream, new()
         {
@@ -125,9 +135,9 @@ public sealed class RStringTableJsonConverter : RStringTableConverter<RStringTab
         writer.WriteStartObject();
         {
             writer.WritePropertyName(JsonVersionName);
-            writer.WriteStringValue(RStringTableMetadata.GetVersionString(value.Metadata));
+            writer.WriteStringValue(RStringTableMetadata.GetVersionString(stringTable.Metadata));
 
-            if (value.Metadata is ILegacyFontConfigMetadata legacyMetadata)
+            if (stringTable.Metadata is ILegacyFontConfigMetadata legacyMetadata)
             {
                 if (legacyMetadata.FontConfig.IsNotNullOrWhiteSpace())
                 {
@@ -139,7 +149,7 @@ public sealed class RStringTableJsonConverter : RStringTableConverter<RStringTab
             writer.WritePropertyName(JsonEntriesName);
             writer.WriteStartObject();
             {
-                foreach (var pair in value.OrderBy(item => RHashtable.GetNameOrHexString(item.Key)))
+                foreach (var pair in stringTable.OrderBy(item => RHashtable.GetNameOrHexString(item.Key)))
                 {
                     writer.WriteProperty(RHashtable.GetNameOrHexString(pair.Key), pair.Value);
                 }
@@ -152,16 +162,22 @@ public sealed class RStringTableJsonConverter : RStringTableConverter<RStringTab
 }
 
 /// <summary>
-/// Extensions for writing JSON.
+/// Provides extension methods for working with JSON using <see cref="Utf8JsonWriter"/>.
 /// </summary>
+/// <remarks>This static class contains helper methods to simplify common JSON writing tasks.</remarks>
 static file class JsonExtensions
 {
     /// <summary>
-    /// Write a property to the writer.
+    /// Writes a string property to the specified <see cref="Utf8JsonWriter"/>.
     /// </summary>
-    /// <param name="utf8JsonWriter">The writer.</param>
-    /// <param name="prop">The property name.</param>
-    /// <param name="value">The value.</param>
+    /// <remarks>
+    /// This method writes a property name and its corresponding string value to the JSON output.
+    /// Ensure that the <see cref="Utf8JsonWriter"/> is in a valid state for writing a property before calling this method.
+    /// </remarks>
+    /// <param name="utf8JsonWriter">The <see cref="Utf8JsonWriter"/> instance to which the property will be written. Cannot be <see
+    /// langword="null"/>.</param>
+    /// <param name="prop">The name of the property to write. Cannot be <see langword="null"/> or empty.</param>
+    /// <param name="value">The string value of the property to write. Cannot be <see langword="null"/>.</param>
     internal static void WriteProperty(this Utf8JsonWriter utf8JsonWriter, string prop, string value)
     {
         utf8JsonWriter.WritePropertyName(prop);

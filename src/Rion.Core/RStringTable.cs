@@ -16,7 +16,7 @@ namespace Rion.Core;
 /// Extends the basic dictionary functionality with specific methods and properties
 /// tailored for managing hashed string data.
 /// </summary>
-public class RStringTable : Dictionary<ulong, string>, IRStringTable
+public partial class RStringTable : Dictionary<ulong, string>, IRStringTable
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="RStringTable" /> class.
@@ -89,7 +89,7 @@ public class RStringTable : Dictionary<ulong, string>, IRStringTable
     /// <returns>A new instance of the <see cref="RStringTable" /> class.</returns>
     public static RStringTable Create()
     {
-        return new RStringTable();
+        return [];
     }
 
     /// <summary>

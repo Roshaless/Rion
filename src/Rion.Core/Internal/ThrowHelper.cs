@@ -8,6 +8,8 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 
+using Rion.Core.Serialization;
+
 namespace Rion.Core.Internal;
 
 /// <summary>
@@ -34,4 +36,16 @@ internal static class ThrowHelper
     /// <exception cref="InvalidDataException">Thrown when the header does not match the expected signature.</exception>
     public static void ThrowInvalidFileHeaderException(ReadOnlySpan<byte> data)
         => ThrowInvalidFileHeaderException(data[0], data[1], data[2]);
+
+    /// <summary>
+    /// Throws an <see cref="InvalidOperationException"/> if the specified converter cannot serialize the given type.
+    /// </summary>
+    /// <param name="converter">The converter to validate for serialization capability.</param>
+    /// <param name="targetType">The type to check for serialization support.</param>
+    /// <exception cref="InvalidOperationException">Thrown if the <paramref name="converter"/> cannot serialize the specified <paramref name="targetType"/>.</exception>
+    [DoesNotReturn]
+    public static void ThrowIfCanNotSerialize(RStringTableConverter converter, Type targetType)
+        => throw new InvalidOperationException(
+            $"The converter '{converter.GetType().Name}' cannot serialize the type '{targetType.FullName}'." +
+            $" Supported type: '{converter._serializedType.FullName}'.");
 }

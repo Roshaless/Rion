@@ -11,119 +11,114 @@ using System.Linq;
 
 using Rion.Core;
 using Rion.Core.Buffers;
-using Rion.Core.Conversion;
 using Rion.Core.Hashing;
+using Rion.Core.Serialization;
 
-internal static class Program
+
+var toWriteRst = new List<(string, IRStringTable)>();
+var writeToJson = new List<(string, IRStringTable)>();
+
+foreach (var file in args)
 {
-    internal static void Main(string[] args)
+    try
     {
-        var toWriteRst = new List<(string, IRStringTable)>();
-        var writeToJson = new List<(string, IRStringTable)>();
-
-        foreach (var file in args)
+        var fileStream = File.OpenRead(file);
+        var firstByte = fileStream.ReadByte();
         {
-            try
-            {
-                var fileStream = File.OpenRead(file);
-                var firstByte = fileStream.ReadByte();
-                {
-                    fileStream.Dispose();
-                }
-
-                using var scope = RFileBufferScope.CreateFrom(file);
-
-                if (firstByte is 0x52)
-                {
-                    writeToJson.Add((file, RFile.ReadAsRecord(scope.Span)));
-                }
-                else
-                {
-                    toWriteRst.Add((file, scope.Span.ReadRStringTableFromJson()));
-                }
-            }
-            catch
-            {
-                Console.WriteLine($"Invalid input file: {file}.");
-                continue;
-            }
+            fileStream.Dispose();
         }
 
-        LoadHashes(
-            Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "hashes"),
-            [.. writeToJson.Select(x => x.Item2.Metadata.HashAlgorithm).Distinct()]);
+        using var scope = RFileBufferScope.CreateFrom(file);
 
-
-        DoConvert(writeToJson, (x =>
+        if (firstByte is 0x52)
         {
-            var outputPath = ChangeExt(x.Item1, ".json");
-            {
-                x.Item2.WriteToFile(outputPath);
-            }
-
-            return outputPath;
-        }));
-
-        DoConvert(toWriteRst, (x =>
+            writeToJson.Add((file, RStringTable.ReadAsRecord(scope.Span)));
+        }
+        else
         {
-            var outputPath = ChangeExt(x.Item1, ".stringtable");
-            RFile.Write(outputPath, x.Item2);
-            return outputPath;
-        }));
-    }
-
-    static void DoConvert(List<(string, IRStringTable)> collection, Func<(string, IRStringTable), string> convert)
-    {
-        foreach (var item in collection)
-        {
-            Console.WriteLine($"Input: {item.Item1}");
-
-            try
-            {
-                var outputPath = convert(item);
-                Console.WriteLine($"Output: {outputPath}");
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine($"Error: {e.Message}");
-            }
+            toWriteRst.Add((file, RStringTableSerializer.DeserializeFromJson(scope.Span)));
         }
     }
-
-
-    static void LoadHashes(string hashesDir, params IRSTHashAlgorithm[] hashAlgorithms)
+    catch
     {
-        if (hashAlgorithms.Length == 0)
-            return;
+        Console.WriteLine($"Invalid input file: {file}.");
+        continue;
+    }
+}
 
-        if (Directory.Exists(hashesDir) is false)
-            return;
+LoadHashes(
+    Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "hashes"),
+    [.. writeToJson.Select(x => x.Item2.Metadata.HashAlgorithm).Distinct()]);
+
+
+DoConvert(writeToJson, (x =>
+{
+    var outputPath = ChangeExt(x.Item1, ".json");
+    {
+        RStringTableSerializer.SerializeToJsonFile(outputPath, x.Item2);
+    }
+
+    return outputPath;
+}));
+
+DoConvert(toWriteRst, (x =>
+{
+    var outputPath = ChangeExt(x.Item1, ".stringtable");
+    RStringTable.Write(outputPath, x.Item2);
+    return outputPath;
+}));
+
+static void DoConvert(List<(string, IRStringTable)> collection, Func<(string, IRStringTable), string> convert)
+{
+    foreach (var item in collection)
+    {
+        Console.WriteLine($"Input: {item.Item1}");
 
         try
         {
-            foreach (var path in Directory.EnumerateFiles(hashesDir))
+            var outputPath = convert(item);
+            Console.WriteLine($"Output: {outputPath}");
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine($"Error: {e.Message}");
+        }
+    }
+}
+
+
+static void LoadHashes(string hashesDir, params IRSTHashAlgorithm[] hashAlgorithms)
+{
+    if (hashAlgorithms.Length == 0)
+        return;
+
+    if (Directory.Exists(hashesDir) is false)
+        return;
+
+    try
+    {
+        foreach (var path in Directory.EnumerateFiles(hashesDir))
+        {
+            foreach (var hashAlgorithm in hashAlgorithms)
             {
-                foreach (var hashAlgorithm in hashAlgorithms)
+                try
                 {
-                    try
-                    {
-                        RHashtable.LoadFromStrings(File.ReadAllLines(path), hashAlgorithm);
-                    }
-                    catch (Exception)
-                    {
-                        continue;
-                    }
+                    RHashtable.LoadFromStrings(File.ReadAllLines(path), hashAlgorithm);
+                }
+                catch (Exception)
+                {
+                    continue;
                 }
             }
         }
-        catch
-        {
-            // ignored
-        }
     }
-
-    static string ChangeExt(string path, string ext)
+    catch
     {
-        return Path.ChangeExtension(Path.GetFullPath(path), ext);
+        // ignored
     }
+}
+
+static string ChangeExt(string path, string ext)
+{
+    return Path.ChangeExtension(Path.GetFullPath(path), ext);
 }
