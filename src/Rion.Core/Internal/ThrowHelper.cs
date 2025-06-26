@@ -5,8 +5,10 @@
 // LICENSE file in the root directory of this source tree.
 
 using System;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.Runtime.CompilerServices;
 
 using Rion.Core.Serialization;
 
@@ -25,6 +27,7 @@ internal static class ThrowHelper
     /// <param name="b2">The third byte of the file header.</param>
     /// <exception cref="InvalidDataException">Thrown when the header does not match the expected signature.</exception>
     [DoesNotReturn]
+    [DebuggerStepThrough]
     public static void ThrowInvalidFileHeaderException(byte b0, byte b1, byte b2)
         => throw new InvalidDataException($"Invalid rst file header: '{{0x{b0:X}, 0x{b1:X}, 0x{b2:X} }}'");
 
@@ -34,6 +37,7 @@ internal static class ThrowHelper
     /// <param name="data">A span containing the first three bytes of the file header.</param>
     /// <exception cref="ArgumentOutOfRangeException">Thrown if the span is shorter than 3 bytes.</exception>
     /// <exception cref="InvalidDataException">Thrown when the header does not match the expected signature.</exception>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static void ThrowInvalidFileHeaderException(ReadOnlySpan<byte> data)
         => ThrowInvalidFileHeaderException(data[0], data[1], data[2]);
 
@@ -44,6 +48,7 @@ internal static class ThrowHelper
     /// <param name="targetType">The type to check for serialization support.</param>
     /// <exception cref="InvalidOperationException">Thrown if the <paramref name="converter"/> cannot serialize the specified <paramref name="targetType"/>.</exception>
     [DoesNotReturn]
+    [DebuggerStepThrough]
     public static void ThrowIfCanNotSerialize(RStringTableConverter converter, Type targetType)
         => throw new InvalidOperationException(
             $"The converter '{converter.GetType().Name}' cannot serialize the type '{targetType.FullName}'." +
