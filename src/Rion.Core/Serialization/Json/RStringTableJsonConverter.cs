@@ -36,12 +36,12 @@ public sealed class RStringTableJsonConverter : RStringTableConverter<RStringTab
     /// The <see cref="Lazy{T}"/> ensures that the instance is created only when it is first
     /// accessed, making it efficient for scenarios where the converter may not always be needed.
     /// </remarks>
-    private static readonly Lazy<RStringTableConverter<RStringTable, IRStringTable>> s_lazy = new();
+    private static readonly Lazy<RStringTableJsonConverter> s_lazy = new();
 
     /// <summary>
     /// Gets the singleton instance of the <see cref="RStringTableConverter{RStringTable, IRStringTable}"/> class.
     /// </summary>
-    public static RStringTableConverter<RStringTable, IRStringTable> Instance => s_lazy.Value;
+    public static RStringTableJsonConverter Instance => s_lazy.Value;
 
     /// The names of the JSON properties.
     private const string JsonConfigName = "config";
