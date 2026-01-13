@@ -13,24 +13,24 @@ using Rion.Core.Buffers;
 
 namespace Rion.Core;
 
-public partial class RStringTableWriter
+public partial class StringTableFileWriter
 {
     /// <summary>
-    /// Represents a private class within <see cref="RStringTableWriter"/> responsible for managing
-    /// the content writing process of a string table, including encoding, storage, and disposal of resources.
+    /// Represents a private class within <see cref="StringTableFileWriter"/> responsible for managing
+    /// the null-terminated string writing process of a string table, including storage, and disposal of resources.
     /// </summary>
-    private sealed class RContentWriter : IDisposable
+    private sealed class NTStringWriter : IDisposable
     {
         /// <summary>
         /// Internal buffer writer instance utilized for efficiently writing encoded data.
         /// This member ensures that data is sequentially written into memory before further processing or storage.
         /// </summary>
-        private readonly RBufferWriter _bufferWriter;
+        private readonly RawMemoryWriter _bufferWriter;
 
         /// <summary>
-        /// Encoder instance for efficient conversion of strings into byte sequences, utilized internally within <see cref="RContentWriter"/>.
+        /// Encoder instance for efficient conversion of strings into byte sequences, utilized internally within <see cref="NTStringWriter"/>.
         /// </summary>
-        private readonly RStringEncoder _stringEncoder;
+        private readonly StringEncoder _stringEncoder;
 
         /// <summary>
         /// A dictionary mapping unique strings to their respective offsets within the internal buffer.
@@ -39,15 +39,15 @@ public partial class RStringTableWriter
         private readonly Dictionary<string, int> _textToOffset;
 
         /// <summary>
-        /// Represents a writer for string content used within the <see cref="RStringTableWriter"/> context.
+        /// Represents a writer for string content used within the <see cref="StringTableFileWriter"/> context.
         /// This class is responsible for managing buffer operations and interning strings to efficiently write
         /// string data into a binary format.
         /// </summary>
-        public RContentWriter()
+        public NTStringWriter()
         {
             _textToOffset = InternDictCachePool.Shared.Rent();
-            _bufferWriter = RBufferWriterCachePool.Shared.Rent();
-            _stringEncoder = new RStringEncoder(4096);
+            _bufferWriter = BufferWriterCachePool.Shared.Rent();
+            _stringEncoder = new StringEncoder(4096);
         }
 
         /// <summary>
@@ -65,7 +65,7 @@ public partial class RStringTableWriter
         /// </summary>
         /// <value>
         /// An integer indicating the combined length of data written by both
-        /// the main <see cref="RBufferWriter"/> and the <see cref="RContentWriter"/>'s internal buffer.
+        /// the main <see cref="RawMemoryWriter"/> and the <see cref="NTStringWriter"/>'s internal buffer.
         /// </value>
         public int Length
         {
@@ -76,7 +76,7 @@ public partial class RStringTableWriter
         public void Dispose()
         {
             InternDictCachePool.Shared.Return(_textToOffset);
-            RBufferWriterCachePool.Shared.Return(_bufferWriter);
+            BufferWriterCachePool.Shared.Return(_bufferWriter);
             _stringEncoder.Dispose();
         }
 

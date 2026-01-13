@@ -18,36 +18,36 @@ using Rion.Core.Metadata;
 namespace Rion.Core;
 
 /// <summary>
-/// Provides extension methods for <see cref="IRStringTable"/>.
+/// Provides extension methods for <see cref="IStringTable"/>.
 /// </summary>
-public static partial class RStringTableExtensions
+public static partial class StringTableExtensions
 {
     /// <summary>
-    /// Converts the given collection into a <see cref="RStringTable"/> using the specified metadata.
+    /// Converts the given collection into a <see cref="StringTable"/> using the specified metadata.
     /// </summary>
     /// <param name="collection">The collection to convert.</param>
     /// <param name="metadata">The metadata to set.</param>
-    /// <returns>A new <see cref="RStringTable"/> instance.</returns>
-    public static RStringTable ToRStringTable(
+    /// <returns>A new <see cref="StringTable"/> instance.</returns>
+    public static StringTable ToRStringTable(
         this IEnumerable<KeyValuePair<ulong, string>> collection,
-        IRStringTableMetadata metadata) => RStringTable.Create(metadata, collection);
+        IStringTableMetadata metadata) => StringTable.Create(metadata, collection);
 
     /// <summary>
-    /// Converts the given dictionary into a <see cref="RStringTable"/> using the specified metadata.
+    /// Converts the given dictionary into a <see cref="StringTable"/> using the specified metadata.
     /// </summary>
     /// <param name="dictionary">The dictionary to convert.</param>
     /// <param name="metadata">The metadata to set.</param>
-    /// <returns>A new <see cref="RStringTable"/> instance.</returns>
-    public static RStringTable ToRStringTable(
+    /// <returns>A new <see cref="StringTable"/> instance.</returns>
+    public static StringTable ToRStringTable(
         this IDictionary<ulong, string> dictionary,
-        IRStringTableMetadata metadata) => RStringTable.Create(metadata, dictionary);
+        IStringTableMetadata metadata) => StringTable.Create(metadata, dictionary);
 
     // ======================================================================================
     // ================= Add - <ulong, Any> =================================================
     // ======================================================================================
 
     /// <summary>
-    /// Adds a new entry to the <see cref="IRStringTable"/> with the specified key and value.
+    /// Adds a new entry to the <see cref="IStringTable"/> with the specified key and value.
     /// </summary>
     /// <param name="source">The source to add the entry to.</param>
     /// <param name="key">The key of the entry to add.</param>
@@ -56,11 +56,11 @@ public static partial class RStringTableExtensions
     /// <typeparam name="TValue">The type of the value.</typeparam>
     public static void Add<TSource, TValue>(
         this TSource source, ulong key, TValue value)
-        where TSource : IRStringTable, IDictionary<ulong, string> where TValue : IConvertible
+        where TSource : IStringTable, IDictionary<ulong, string> where TValue : IConvertible
         => source.Add(key, value.ToString(CultureInfo.CurrentCulture));
 
     /// <summary>
-    /// Adds a new entry to the <see cref="IRStringTable"/> with the specified key and value.
+    /// Adds a new entry to the <see cref="IStringTable"/> with the specified key and value.
     /// </summary>
     /// <param name="source">The source to add the entry to.</param>
     /// <param name="key">The key of the entry to add.</param>
@@ -70,11 +70,11 @@ public static partial class RStringTableExtensions
     /// <typeparam name="TValue">The type of the value.</typeparam>
     public static void Add<TSource, TValue>(
         this TSource source, ulong key, TValue value, IFormatProvider provider)
-        where TSource : IRStringTable, IDictionary<ulong, string> where TValue : IConvertible
+        where TSource : IStringTable, IDictionary<ulong, string> where TValue : IConvertible
         => source.Add(key, value.ToString(provider));
 
     /// <summary>
-    /// Adds a new entry to the <see cref="IRStringTable"/> with the specified key and value.
+    /// Adds a new entry to the <see cref="IStringTable"/> with the specified key and value.
     /// </summary>
     /// <param name="source">The source to add the entry to.</param>
     /// <param name="key">The key of the entry to add.</param>
@@ -82,7 +82,7 @@ public static partial class RStringTableExtensions
     /// <typeparam name="TSource">The type of the source.</typeparam>
     public static void Add<TSource>(
         this TSource source, ulong key, object? value)
-        where TSource : IRStringTable, IDictionary<ulong, string>
+        where TSource : IStringTable, IDictionary<ulong, string>
         => source.Add(key, value?.ToString() ?? string.Empty);
 
     // ======================================================================================
@@ -90,7 +90,7 @@ public static partial class RStringTableExtensions
     // ======================================================================================
 
     /// <summary>
-    /// Adds a new entry to the <see cref="IRStringTable"/> with the specified name and value.
+    /// Adds a new entry to the <see cref="IStringTable"/> with the specified name and value.
     /// </summary>
     /// <param name="source">The source to add the entry to.</param>
     /// <param name="name">The name to hash and use as the key.</param>
@@ -98,11 +98,11 @@ public static partial class RStringTableExtensions
     /// <typeparam name="TSource">The type of the source.</typeparam>
     public static void Add<TSource>(
         this TSource source, string name, string value)
-        where TSource : IRStringTable, IDictionary<ulong, string>
+        where TSource : IStringTable, IDictionary<ulong, string>
         => source.Add(NameToHash(source, name), value);
 
     /// <summary>
-    /// Adds a new entry to the <see cref="IRStringTable"/> with the specified name and value.
+    /// Adds a new entry to the <see cref="IStringTable"/> with the specified name and value.
     /// </summary>
     /// <param name="source">The source to add the entry to.</param>
     /// <param name="name">The name to hash and use as the key.</param>
@@ -111,11 +111,11 @@ public static partial class RStringTableExtensions
     /// <typeparam name="TValue">The type of the value.</typeparam>
     public static void Add<TSource, TValue>(
         this TSource source, string name, TValue value)
-        where TSource : IRStringTable, IDictionary<ulong, string> where TValue : IConvertible
+        where TSource : IStringTable, IDictionary<ulong, string> where TValue : IConvertible
         => source.Add(NameToHash(source, name), value.ToString(CultureInfo.CurrentCulture));
 
     /// <summary>
-    /// Adds a new entry to the <see cref="IRStringTable"/> with the specified name and value.
+    /// Adds a new entry to the <see cref="IStringTable"/> with the specified name and value.
     /// </summary>
     /// <param name="source">The source to add the entry to.</param>
     /// <param name="name">The name to hash and use as the key.</param>
@@ -125,11 +125,11 @@ public static partial class RStringTableExtensions
     /// <typeparam name="TValue">The type of the value.</typeparam>
     public static void Add<TSource, TValue>(
         this TSource source, string name, TValue value, IFormatProvider provider)
-        where TSource : IRStringTable, IDictionary<ulong, string> where TValue : IConvertible
+        where TSource : IStringTable, IDictionary<ulong, string> where TValue : IConvertible
         => source.Add(NameToHash(source, name), value.ToString(provider));
 
     /// <summary>
-    /// Adds a new entry to the <see cref="IRStringTable"/> with the specified name and value.
+    /// Adds a new entry to the <see cref="IStringTable"/> with the specified name and value.
     /// </summary>
     /// <param name="source">The source to add the entry to.</param>
     /// <param name="name">The name to hash and use as the key.</param>
@@ -137,7 +137,7 @@ public static partial class RStringTableExtensions
     /// <typeparam name="TSource">The type of the source.</typeparam>
     public static void Add<TSource>(
         this TSource source, string name, object? value)
-        where TSource : IRStringTable, IDictionary<ulong, string>
+        where TSource : IStringTable, IDictionary<ulong, string>
         => source.Add(NameToHash(source, name), value?.ToString() ?? string.Empty);
 
     // ======================================================================================
@@ -145,7 +145,7 @@ public static partial class RStringTableExtensions
     // ======================================================================================
 
     /// <summary>
-    /// Adds a new entry to the <see cref="IRStringTable"/> with the specified key and value.
+    /// Adds a new entry to the <see cref="IStringTable"/> with the specified key and value.
     /// </summary>
     /// <param name="source">The source to add the entry to.</param>
     /// <param name="pair">The key and value to add.</param>
@@ -153,11 +153,11 @@ public static partial class RStringTableExtensions
     /// <typeparam name="TValue">The type of the value.</typeparam>
     public static void Add<TSource, TValue>(
         this TSource source, KeyValuePair<ulong, TValue> pair)
-        where TSource : RStringTable, ICollection<KeyValuePair<ulong, string>> where TValue : IConvertible
+        where TSource : StringTable, ICollection<KeyValuePair<ulong, string>> where TValue : IConvertible
         => source.Add(KeyValuePair.Create(pair.Key, pair.Value.ToString(CultureInfo.CurrentCulture)));
 
     /// <summary>
-    /// Adds a new entry to the <see cref="IRStringTable"/> with the specified key and value.
+    /// Adds a new entry to the <see cref="IStringTable"/> with the specified key and value.
     /// </summary>
     /// <param name="source">The source to add the entry to.</param>
     /// <param name="pair">The key and value to add.</param>
@@ -166,18 +166,18 @@ public static partial class RStringTableExtensions
     /// <typeparam name="TValue">The type of the value.</typeparam>
     public static void Add<TSource, TValue>(
         this TSource source, KeyValuePair<ulong, TValue> pair, IFormatProvider provider)
-        where TSource : IRStringTable, ICollection<KeyValuePair<ulong, string>> where TValue : IConvertible
+        where TSource : IStringTable, ICollection<KeyValuePair<ulong, string>> where TValue : IConvertible
         => source.Add(KeyValuePair.Create(pair.Key, pair.Value.ToString(provider)));
 
     /// <summary>
-    /// Adds a new entry to the <see cref="IRStringTable"/> with the specified key and value.
+    /// Adds a new entry to the <see cref="IStringTable"/> with the specified key and value.
     /// </summary>
     /// <param name="source">The source to add the entry to.</param>
     /// <param name="pair">The key and value to add.</param>
     /// <typeparam name="TSource">The type of the source.</typeparam>
     public static void Add<TSource>(
         this TSource source, KeyValuePair<ulong, object> pair)
-        where TSource : IRStringTable, ICollection<KeyValuePair<ulong, string>>
+        where TSource : IStringTable, ICollection<KeyValuePair<ulong, string>>
         => source.Add(KeyValuePair.Create(pair.Key, pair.Value.ToString() ?? string.Empty));
 
     // ======================================================================================
@@ -185,18 +185,18 @@ public static partial class RStringTableExtensions
     // ======================================================================================
 
     /// <summary>
-    /// Adds a new entry to the <see cref="IRStringTable"/> with the specified key and value.
+    /// Adds a new entry to the <see cref="IStringTable"/> with the specified key and value.
     /// </summary>
     /// <param name="source">The source to add the entry to.</param>
     /// <param name="pair">The key and value to add.</param>
     /// <typeparam name="TSource">The type of the source.</typeparam>
     public static void Add<TSource>(
         this TSource source, KeyValuePair<string, string> pair)
-        where TSource : IRStringTable, ICollection<KeyValuePair<ulong, string>>
+        where TSource : IStringTable, ICollection<KeyValuePair<ulong, string>>
         => source.Add(KeyValuePair.Create(NameToHash(source, pair.Key), pair.Value));
 
     /// <summary>
-    /// Adds a new entry to the <see cref="IRStringTable"/> with the specified key and value.
+    /// Adds a new entry to the <see cref="IStringTable"/> with the specified key and value.
     /// </summary>
     /// <param name="source">The source to add the entry to.</param>
     /// <param name="pair">The key and value to add.</param>
@@ -204,11 +204,11 @@ public static partial class RStringTableExtensions
     /// <typeparam name="TValue">The type of the value.</typeparam>
     public static void Add<TSource, TValue>(
         this TSource source, KeyValuePair<string, TValue> pair)
-        where TSource : IRStringTable, ICollection<KeyValuePair<ulong, string>> where TValue : IConvertible
+        where TSource : IStringTable, ICollection<KeyValuePair<ulong, string>> where TValue : IConvertible
         => source.Add(KeyValuePair.Create(NameToHash(source, pair.Key), pair.Value.ToString(CultureInfo.CurrentCulture)));
 
     /// <summary>
-    /// Adds a new entry to the <see cref="IRStringTable"/> with the specified key and value.
+    /// Adds a new entry to the <see cref="IStringTable"/> with the specified key and value.
     /// </summary>
     /// <param name="source">The source to add the entry to.</param>
     /// <param name="pair">The key and value to add.</param>
@@ -217,18 +217,18 @@ public static partial class RStringTableExtensions
     /// <typeparam name="TValue">The type of the value.</typeparam>
     public static void Add<TSource, TValue>(
         this TSource source, KeyValuePair<string, TValue> pair, IFormatProvider provider)
-        where TSource : IRStringTable, ICollection<KeyValuePair<ulong, string>> where TValue : IConvertible
+        where TSource : IStringTable, ICollection<KeyValuePair<ulong, string>> where TValue : IConvertible
         => source.Add(KeyValuePair.Create(NameToHash(source, pair.Key), pair.Value.ToString(provider)));
 
     /// <summary>
-    /// Adds a new entry to the <see cref="IRStringTable"/> with the specified key and value.
+    /// Adds a new entry to the <see cref="IStringTable"/> with the specified key and value.
     /// </summary>
     /// <param name="source">The source to add the entry to.</param>
     /// <param name="pair">The key and value to add.</param>
     /// <typeparam name="TSource">The type of the source.</typeparam>
     public static void Add<TSource>(
         this TSource source, KeyValuePair<string, object> pair)
-        where TSource : IRStringTable, ICollection<KeyValuePair<ulong, string>>
+        where TSource : IStringTable, ICollection<KeyValuePair<ulong, string>>
         => source.Add(KeyValuePair.Create(NameToHash(source, pair.Key), pair.Value.ToString() ?? string.Empty));
 
     // ======================================================================================
@@ -236,19 +236,19 @@ public static partial class RStringTableExtensions
     // ======================================================================================
 
     /// <summary>
-    /// Determines whether the <see cref="IRStringTable"/> contains the specified name.
+    /// Determines whether the <see cref="IStringTable"/> contains the specified name.
     /// </summary>
     /// <param name="source">The source to search.</param>
     /// <param name="name">The name to hash and lookup.</param>
     /// <typeparam name="TSource">The type of the source.</typeparam>
-    /// <returns><see langword="true"/> if the <see cref="IRStringTable"/> contains the specified name; otherwise, <see langword="false"/>.</returns>
+    /// <returns><see langword="true"/> if the <see cref="IStringTable"/> contains the specified name; otherwise, <see langword="false"/>.</returns>
     public static bool ContainsKey<TSource>(
         this TSource source, string name)
-        where TSource : IRStringTable, IDictionary<ulong, string>
+        where TSource : IStringTable, IDictionary<ulong, string>
         => source.ContainsKey(NameToHash(source, name));
 
     /// <summary>
-    /// Removes the entry with the specified name from the <see cref="IRStringTable"/>.
+    /// Removes the entry with the specified name from the <see cref="IStringTable"/>.
     /// </summary>
     /// <param name="source">The source to remove the entry from.</param>
     /// <param name="name">The name to hash and remove.</param>
@@ -256,11 +256,11 @@ public static partial class RStringTableExtensions
     /// <returns><see langword="true"/> if the entry was successfully removed; otherwise, <see langword="false"/>.</returns>
     public static bool Remove<TSource>(
         this TSource source, string name)
-        where TSource : IRStringTable, IDictionary<ulong, string>
+        where TSource : IStringTable, IDictionary<ulong, string>
         => source.Remove(NameToHash(source, name));
 
     /// <summary>
-    /// Try to get the value associated with the specified name from the <see cref="IRStringTable"/>.
+    /// Try to get the value associated with the specified name from the <see cref="IStringTable"/>.
     /// </summary>
     /// <param name="source">The source to get the value from.</param>
     /// <param name="name">The name to hash and lookup.</param>
@@ -269,7 +269,7 @@ public static partial class RStringTableExtensions
     /// <returns><see langword="true"/> if the value was found; otherwise, <see langword="false"/>.</returns>
     public static bool TryGetValue<TSource>(
         this TSource source, string name, [NotNullWhen(true)] out string? value)
-        where TSource : IRStringTable, IDictionary<ulong, string>
+        where TSource : IStringTable, IDictionary<ulong, string>
         => source.TryGetValue(NameToHash(source, name), out value);
 
     // ======================================================================================
@@ -277,7 +277,7 @@ public static partial class RStringTableExtensions
     // ======================================================================================
 
     /// <summary>
-    /// Try to add a new entry to the <see cref="IRStringTable"/> with the specified key and value.
+    /// Try to add a new entry to the <see cref="IStringTable"/> with the specified key and value.
     /// </summary>
     /// <param name="source">The source to add the entry to.</param>
     /// <param name="key">The key of the entry to add.</param>
@@ -287,11 +287,11 @@ public static partial class RStringTableExtensions
     /// <returns><see langword="true"/> if the entry was successfully added; otherwise, <see langword="false"/>.</returns>
     public static bool TryAdd<TSource, TValue>(
         this TSource source, ulong key, TValue value)
-        where TSource : IRStringTable, IDictionary<ulong, string> where TValue : IConvertible
+        where TSource : IStringTable, IDictionary<ulong, string> where TValue : IConvertible
         => CollectionExtensions.TryAdd(source, key, value.ToString(CultureInfo.CurrentCulture));
 
     /// <summary>
-    /// Try to add a new entry to the <see cref="IRStringTable"/> with the specified key and value.
+    /// Try to add a new entry to the <see cref="IStringTable"/> with the specified key and value.
     /// </summary>
     /// <param name="source">The source to add the entry to.</param>
     /// <param name="key">The key of the entry to add.</param>
@@ -302,11 +302,11 @@ public static partial class RStringTableExtensions
     /// <returns><see langword="true"/> if the entry was successfully added; otherwise, <see langword="false"/>.</returns>
     public static bool TryAdd<TSource, TValue>(
         this TSource source, ulong key, TValue value, IFormatProvider provider)
-        where TSource : IRStringTable, IDictionary<ulong, string> where TValue : IConvertible
+        where TSource : IStringTable, IDictionary<ulong, string> where TValue : IConvertible
         => CollectionExtensions.TryAdd(source, key, value.ToString(provider));
 
     /// <summary>
-    /// Try to add a new entry to the <see cref="IRStringTable"/> with the specified key and value.
+    /// Try to add a new entry to the <see cref="IStringTable"/> with the specified key and value.
     /// </summary>
     /// <param name="source">The source to add the entry to.</param>
     /// <param name="key">The key of the entry to add.</param>
@@ -315,7 +315,7 @@ public static partial class RStringTableExtensions
     /// <returns><see langword="true"/> if the entry was successfully added; otherwise, <see langword="false"/>.</returns>
     public static bool TryAdd<TSource>(
         this TSource source, ulong key, object? value)
-        where TSource : IRStringTable, IDictionary<ulong, string>
+        where TSource : IStringTable, IDictionary<ulong, string>
         => CollectionExtensions.TryAdd(source, key, value?.ToString() ?? string.Empty);
 
     // ======================================================================================
@@ -323,7 +323,7 @@ public static partial class RStringTableExtensions
     // ======================================================================================
 
     /// <summary>
-    /// Try to add a new entry to the <see cref="IRStringTable"/> with the specified name and value.
+    /// Try to add a new entry to the <see cref="IStringTable"/> with the specified name and value.
     /// </summary>
     /// <param name="source">The source to add the entry to.</param>
     /// <param name="name">The name to hash and add.</param>
@@ -333,11 +333,11 @@ public static partial class RStringTableExtensions
     /// <returns><see langword="true"/> if the entry was successfully added; otherwise, <see langword="false"/>.</returns>
     public static bool TryAdd<TSource, TValue>(
         this TSource source, string name, TValue value)
-        where TSource : IRStringTable, IDictionary<ulong, string> where TValue : IConvertible
+        where TSource : IStringTable, IDictionary<ulong, string> where TValue : IConvertible
         => CollectionExtensions.TryAdd(source, NameToHash(source, name), value.ToString(CultureInfo.CurrentCulture));
 
     /// <summary>
-    /// Try to add a new entry to the <see cref="IRStringTable"/> with the specified name and value.
+    /// Try to add a new entry to the <see cref="IStringTable"/> with the specified name and value.
     /// </summary>
     /// <param name="source">The source to add the entry to.</param>
     /// <param name="name">The name to hash and add.</param>
@@ -348,11 +348,11 @@ public static partial class RStringTableExtensions
     /// <returns><see langword="true"/> if the entry was successfully added; otherwise, <see langword="false"/>.</returns>
     public static bool TryAdd<TSource, TValue>(
         this TSource source, string name, TValue value, IFormatProvider provider)
-        where TSource : IRStringTable, IDictionary<ulong, string> where TValue : IConvertible
+        where TSource : IStringTable, IDictionary<ulong, string> where TValue : IConvertible
         => CollectionExtensions.TryAdd(source, NameToHash(source, name), value.ToString(provider));
 
     /// <summary>
-    /// Try to add a new entry to the <see cref="IRStringTable"/> with the specified name and value.
+    /// Try to add a new entry to the <see cref="IStringTable"/> with the specified name and value.
     /// </summary>
     /// <param name="source">The source to add the entry to.</param>
     /// <param name="name">The name to hash and add.</param>
@@ -361,7 +361,7 @@ public static partial class RStringTableExtensions
     /// <returns><see langword="true"/> if the entry was successfully added; otherwise, <see langword="false"/>.</returns>
     public static bool TryAdd<TSource>(
         this TSource source, string name, object? value)
-        where TSource : IRStringTable, IDictionary<ulong, string>
+        where TSource : IStringTable, IDictionary<ulong, string>
         => CollectionExtensions.TryAdd(source, NameToHash(source, name), value?.ToString() ?? string.Empty);
 
 
@@ -377,7 +377,7 @@ public static partial class RStringTableExtensions
     /// <returns>The hash of the specified name.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ulong NameToHash(
-        this IRStringTable source, string name)
+        this IStringTable source, string name)
         => source.Metadata.HashAlgorithm.Hash(name);
 
     /// <summary>
@@ -391,7 +391,7 @@ public static partial class RStringTableExtensions
     /// <returns>The source with the replaced text.</returns>
     public static TSource ReplaceAll<TSource>(this TSource source,
         string oldText, string? newText, bool caseSensitive = false)
-        where TSource : IRStringTable, IDictionary<ulong, string>
+        where TSource : IStringTable, IDictionary<ulong, string>
     {
         ArgumentException.ThrowIfNullOrEmpty(oldText);
 
@@ -411,14 +411,14 @@ public static partial class RStringTableExtensions
     }
 
     /// <summary>
-    /// Compare two <see cref="IRStringTable"/>s for equality.
+    /// Compare two <see cref="IStringTable"/>s for equality.
     /// </summary>
-    /// <param name="x">The first <see cref="IRStringTable"/> to compare.</param>
-    /// <param name="y">The second <see cref="IRStringTable"/> to compare.</param>
-    /// <returns><see langword="true"/> if the two <see cref="IRStringTable"/>s are equal; otherwise, <see langword="false"/>.</returns>
+    /// <param name="x">The first <see cref="IStringTable"/> to compare.</param>
+    /// <param name="y">The second <see cref="IStringTable"/> to compare.</param>
+    /// <returns><see langword="true"/> if the two <see cref="IStringTable"/>s are equal; otherwise, <see langword="false"/>.</returns>
     public static bool ItemsEquals(
-        [NotNullWhen(true)] this IRStringTable? x,
-        [NotNullWhen(true)] IRStringTable? y)
+        [NotNullWhen(true)] this IStringTable? x,
+        [NotNullWhen(true)] IStringTable? y)
     {
         if (ReferenceEquals(x, y))
             return true;
@@ -453,24 +453,24 @@ public static partial class RStringTableExtensions
     }
 
     /// <summary>
-    /// Compare two <see cref="IRStringTable"/>s for equality.
+    /// Compare two <see cref="IStringTable"/>s for equality.
     /// </summary>
-    /// <param name="left">The first <see cref="IRStringTable"/> to compare.</param>
-    /// <param name="right">The second <see cref="IRStringTable"/> to compare.</param>
-    /// <returns><see langword="true"/> if the two <see cref="IRStringTable"/>s are equal; otherwise, <see langword="false"/>.</returns>
+    /// <param name="left">The first <see cref="IStringTable"/> to compare.</param>
+    /// <param name="right">The second <see cref="IStringTable"/> to compare.</param>
+    /// <returns><see langword="true"/> if the two <see cref="IStringTable"/>s are equal; otherwise, <see langword="false"/>.</returns>
     public static bool Equals(
-        [NotNullWhen(true)] this IRStringTable? left,
-        [NotNullWhen(true)] IRStringTable? right)
+        [NotNullWhen(true)] this IStringTable? left,
+        [NotNullWhen(true)] IStringTable? right)
     {
         return left.ItemsEquals(right) && left.Metadata.Equals(right.Metadata);
     }
 
     /// <summary>
-    /// Calculate the content offset of the specified <see cref="IRStringTable"/>.
+    /// Calculate the content offset of the specified <see cref="IStringTable"/>.
     /// </summary>
     /// <param name="source">The source to calculate the offset of.</param>
-    /// <returns>The content offset of the specified <see cref="IRStringTable"/>.</returns>
-    public static int CalcContentOffset(this IRStringTable source)
+    /// <returns>The content offset of the specified <see cref="IStringTable"/>.</returns>
+    public static int CalcContentOffset(this IStringTable source)
     {
         var metadata = source.Metadata;
         var version = metadata.Version;
@@ -491,7 +491,7 @@ public static partial class RStringTableExtensions
     // ======================================================================================
 
     /// <summary>
-    /// Add a new item to the <see cref="IRStringTable"/> and return the source.
+    /// Add a new item to the <see cref="IStringTable"/> and return the source.
     /// </summary>
     /// <param name="source">The source to add the item to.</param>
     /// <param name="key">The key of the item to add.</param>
@@ -500,14 +500,14 @@ public static partial class RStringTableExtensions
     /// <returns>The source with the added item.</returns>
     public static TSource WithItem<TSource>(
         this TSource source, ulong key, string value)
-        where TSource : IRStringTable, IDictionary<ulong, string>
+        where TSource : IStringTable, IDictionary<ulong, string>
     {
         source[key] = value;
         return source;
     }
 
     /// <summary>
-    /// Add a new item to the <see cref="IRStringTable"/> and return the source.
+    /// Add a new item to the <see cref="IStringTable"/> and return the source.
     /// </summary>
     /// <param name="source">The source to add the item to.</param>
     /// <param name="key">The key of the item to add.</param>
@@ -517,11 +517,11 @@ public static partial class RStringTableExtensions
     /// <returns>The source with the added item.</returns>
     public static TSource WithItem<TSource, TValue>(
         this TSource source, ulong key, TValue value)
-        where TSource : IRStringTable, IDictionary<ulong, string> where TValue : IConvertible
+        where TSource : IStringTable, IDictionary<ulong, string> where TValue : IConvertible
         => WithItem(source, key, value.ToString(CultureInfo.CurrentCulture));
 
     /// <summary>
-    /// Add a new item to the <see cref="IRStringTable"/> and return the source.
+    /// Add a new item to the <see cref="IStringTable"/> and return the source.
     /// </summary>
     /// <param name="source">The source to add the item to.</param>
     /// <param name="key">The key of the item to add.</param>
@@ -532,11 +532,11 @@ public static partial class RStringTableExtensions
     /// <returns>The source with the added item.</returns>
     public static TSource WithItem<TSource, TValue>(
         this TSource source, ulong key, TValue value, IFormatProvider provider)
-        where TSource : IRStringTable, IDictionary<ulong, string> where TValue : IConvertible
+        where TSource : IStringTable, IDictionary<ulong, string> where TValue : IConvertible
         => WithItem(source, key, value.ToString(provider));
 
     /// <summary>
-    /// Add a new item to the <see cref="IRStringTable"/> and return the source.
+    /// Add a new item to the <see cref="IStringTable"/> and return the source.
     /// </summary>
     /// <param name="source">The source to add the item to.</param>
     /// <param name="key">The key of the item to add.</param>
@@ -545,7 +545,7 @@ public static partial class RStringTableExtensions
     /// <returns>The source with the added item.</returns>
     public static TSource WithItem<TSource>(
         this TSource source, ulong key, object? value)
-        where TSource : IRStringTable, IDictionary<ulong, string>
+        where TSource : IStringTable, IDictionary<ulong, string>
         => WithItem(source, key, value?.ToString() ?? string.Empty);
 
     // ======================================================================================
@@ -553,7 +553,7 @@ public static partial class RStringTableExtensions
     // ======================================================================================
 
     /// <summary>
-    /// Add a new item to the <see cref="IRStringTable"/> and return the source.
+    /// Add a new item to the <see cref="IStringTable"/> and return the source.
     /// </summary>
     /// <param name="source">The source to add the item to.</param>
     /// <param name="pair">The item to add.</param>
@@ -561,14 +561,14 @@ public static partial class RStringTableExtensions
     /// <returns>The source with the added item.</returns>
     public static TSource WithItem<TSource>(
         this TSource source, KeyValuePair<ulong, string> pair)
-        where TSource : IRStringTable, ICollection<KeyValuePair<ulong, string>>
+        where TSource : IStringTable, ICollection<KeyValuePair<ulong, string>>
     {
         source.Add(pair);
         return source;
     }
 
     /// <summary>
-    /// Add a new item to the <see cref="IRStringTable"/> and return the source.
+    /// Add a new item to the <see cref="IStringTable"/> and return the source.
     /// </summary>
     /// <param name="source">The source to add the item to.</param>
     /// <param name="pair">The item to add.</param>
@@ -577,11 +577,11 @@ public static partial class RStringTableExtensions
     /// <returns>The source with the added item.</returns>
     public static TSource WithItem<TSource, TValue>(
         this TSource source, KeyValuePair<string, TValue> pair)
-        where TSource : IRStringTable, IDictionary<ulong, string> where TValue : IConvertible
+        where TSource : IStringTable, IDictionary<ulong, string> where TValue : IConvertible
         => WithItem(source, KeyValuePair.Create(NameToHash(source, pair.Key), pair.Value.ToString(CultureInfo.CurrentCulture)));
 
     /// <summary>
-    /// Add a new item to the <see cref="IRStringTable"/> and return the source.
+    /// Add a new item to the <see cref="IStringTable"/> and return the source.
     /// </summary>
     /// <param name="source">The source to add the item to.</param>
     /// <param name="pair">The item to add.</param>
@@ -591,11 +591,11 @@ public static partial class RStringTableExtensions
     /// <returns>The source with the added item.</returns>
     public static TSource WithItem<TSource, TValue>(
         this TSource source, KeyValuePair<string, TValue> pair, IFormatProvider provider)
-        where TSource : IRStringTable, ICollection<KeyValuePair<ulong, string>> where TValue : IConvertible
+        where TSource : IStringTable, ICollection<KeyValuePair<ulong, string>> where TValue : IConvertible
         => WithItem(source, KeyValuePair.Create(NameToHash(source, pair.Key), pair.Value.ToString(provider)));
 
     /// <summary>
-    /// Add a new item to the <see cref="IRStringTable"/> and return the source.
+    /// Add a new item to the <see cref="IStringTable"/> and return the source.
     /// </summary>
     /// <param name="source">The source to add the item to.</param>
     /// <param name="pair">The item to add.</param>
@@ -603,6 +603,6 @@ public static partial class RStringTableExtensions
     /// <returns>The source with the added item.</returns>
     public static TSource WithItem<TSource>(
         this TSource source, KeyValuePair<string, object> pair)
-        where TSource : IRStringTable, ICollection<KeyValuePair<ulong, string>>
+        where TSource : IStringTable, ICollection<KeyValuePair<ulong, string>>
         => WithItem(source, KeyValuePair.Create(NameToHash(source, pair.Key), pair.Value.ToString() ?? string.Empty));
 }

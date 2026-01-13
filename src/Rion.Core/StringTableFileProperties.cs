@@ -14,21 +14,21 @@ namespace Rion.Core;
 /// Defines the properties of a string table file, including metadata, entry count, offsets for hashes, and content.
 /// This record struct is utilized to store critical information about the structure and content of a string table file.
 /// </summary>
-public sealed record RStringTableFileProperties
+public sealed record StringTableFileProperties
 {
     /// <summary>
     /// Represents the properties of a string table file, encapsulating crucial metadata and structural details.
     /// This record struct is utilized to store critical information about the structure and content of a string table file,
     /// including metadata, entry count, and offsets for hashes and content.
     /// </summary>
-    public RStringTableFileProperties() { }
+    public StringTableFileProperties() { }
 
     /// <summary>
     /// Provides properties of a string table file, including metadata, entry count, and offsets for efficient data access.
     /// This class encapsulates essential details for reading and interpreting the structure of a string table file.
     /// </summary>
     [SetsRequiredMembers]
-    public RStringTableFileProperties(IRStringTableMetadata metadata, int entryCount, int hashesOffset,
+    public StringTableFileProperties(IStringTableMetadata metadata, int entryCount, int hashesOffset,
         int contentOffset)
     {
         Metadata = metadata;
@@ -41,9 +41,9 @@ public sealed record RStringTableFileProperties
     /// Gets the metadata associated with the string table file.
     /// </summary>
     /// <value>
-    /// An instance of <see cref="IRStringTableMetadata"/> containing details like hash algorithm and version of the string table.
+    /// An instance of <see cref="IStringTableMetadata"/> containing details like hash algorithm and version of the string table.
     /// </value>
-    public required IRStringTableMetadata Metadata { get; init; }
+    public required IStringTableMetadata Metadata { get; init; }
 
     /// <summary>
     /// Gets the count of entries in the string table.

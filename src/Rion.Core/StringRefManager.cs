@@ -21,7 +21,7 @@ namespace Rion.Core;
 /// Manages a pool of strings to optimize memory usage and access efficiency by caching string instances using weak references.
 /// It allows for efficient string retrieval and automatic memory management through garbage collection when strings are no longer in use.
 /// </summary>
-public static class RStringPool
+public static class StringRefManager
 {
     /// <summary>
     /// A dictionary that caches strings as weak references to optimize memory usage.
@@ -34,7 +34,7 @@ public static class RStringPool
     };
 
     /// <summary>
-    /// Retrieves a string from the <see cref="RStringPool"/> based on the provided byte span. If the string does not exist,
+    /// Retrieves a string from the <see cref="StringRefManager"/> based on the provided byte span. If the string does not exist,
     /// it is added to the pool before being returned.
     /// </summary>
     /// <param name="span">The byte span representing the string to retrieve or add.</param>
@@ -59,7 +59,7 @@ public static class RStringPool
     }
 
     /// <summary>
-    /// Attempts to retrieve a string from the <see cref="RStringPool"/> based on the provided byte span, without adding it if it's not found.
+    /// Attempts to retrieve a string from the <see cref="StringRefManager"/> based on the provided byte span, without adding it if it's not found.
     /// </summary>
     /// <param name="span">The byte span representing the string to retrieve.</param>
     /// <param name="result">When this method returns, contains the cached string if found; otherwise, null. This parameter is passed uninitialized.</param>

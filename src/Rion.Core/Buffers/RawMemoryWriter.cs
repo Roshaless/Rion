@@ -17,7 +17,7 @@ namespace Rion.Core.Buffers;
 /// Represents a buffer writer that provides methods to write primitive types and spans of bytes into a managed buffer.
 /// This class is designed to be efficient for sequential writes and can be used in performance-critical sections.
 /// </summary>
-public sealed class RBufferWriter : SafeHandle, IRBufferWriter
+public sealed class RawMemoryWriter : SafeHandle, IRawMemoryWriter
 {
     /// <summary>
     /// The default initial capacity used for the buffer writer.
@@ -37,15 +37,15 @@ public sealed class RBufferWriter : SafeHandle, IRBufferWriter
     /// <summary>
     /// Represents a buffer writer that supports writing primitive types and byte spans into a managed buffer.
     /// Optimized for sequential write operations, suitable for performance-sensitive scenarios.
-    /// Implements <see cref="IRBufferWriter"/> and extends <see cref="SafeHandle"/>.
+    /// Implements <see cref="IRawMemoryWriter"/> and extends <see cref="SafeHandle"/>.
     /// </summary>
-    public RBufferWriter() : this(DefaultCapacity) { }
+    public RawMemoryWriter() : this(DefaultCapacity) { }
 
     /// <summary>
-    /// Manages a pool of <see cref="RBufferWriter"/> instances with a default initial capacity optimized for string table operations.
-    /// This class is part of the internal cache management system for <see cref="RStringTableWriter"/>.
+    /// Manages a pool of <see cref="RawMemoryWriter"/> instances with a default initial capacity optimized for string table operations.
+    /// This class is part of the internal cache management system for <see cref="StringTableFileWriter"/>.
     /// </summary>
-    public RBufferWriter(int capacity) : base(nint.Zero, true)
+    public RawMemoryWriter(int capacity) : base(nint.Zero, true)
     {
         if (capacity <= 0)
         {

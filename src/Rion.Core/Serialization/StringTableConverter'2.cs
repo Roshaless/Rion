@@ -17,12 +17,12 @@ namespace Rion.Core.Serialization;
 /// deserialized and serialized representations are strongly typed. Derived classes must implement the <see
 /// cref="Deserialize"/> and <see cref="Serialize"/> methods to provide specific conversion logic.
 /// </remarks>
-/// <typeparam name="TDeserialized">The type representing the deserialized string table. Must implement <see cref="IRStringTable"/>.</typeparam>
-/// <typeparam name="TSerialized">The type representing the serialized string table. Must implement <see cref="IRStringTable"/>.</typeparam>
-public abstract class RStringTableConverter<TDeserialized, TSerialized> : RStringTableConverter where TDeserialized : IRStringTable where TSerialized : IRStringTable
+/// <typeparam name="TDeserialized">The type representing the deserialized string table. Must implement <see cref="IStringTable"/>.</typeparam>
+/// <typeparam name="TSerialized">The type representing the serialized string table. Must implement <see cref="IStringTable"/>.</typeparam>
+public abstract class StringTableConverter<TDeserialized, TSerialized> : StringTableConverter where TDeserialized : IStringTable where TSerialized : IStringTable
 {
     /// <summary>
-    /// Initializes a new instance of the <see cref="RStringTableConverter"/> class, specifying the types to be
+    /// Initializes a new instance of the <see cref="StringTableConverter"/> class, specifying the types to be
     /// converted.
     /// </summary>
     /// <remarks>
@@ -30,7 +30,7 @@ public abstract class RStringTableConverter<TDeserialized, TSerialized> : RStrin
     /// and the target type <typeparamref name="TSerialized"/>. It is typically used to handle
     /// conversions between these two types in serialization or deserialization scenarios.
     /// </remarks>
-    public RStringTableConverter() : base(typeof(TDeserialized), typeof(TSerialized)) { }
+    public StringTableConverter() : base(typeof(TDeserialized), typeof(TSerialized)) { }
 
     /// <summary>
     /// Deserializes the specified byte span into an instance of the target type.

@@ -16,9 +16,9 @@ namespace Rion.Core.Metadata;
 /// </summary>
 /// <param name="HashAlgorithm">The hash algorithm to set.</param>
 /// <param name="Version">The version to set.</param>
-public record class RStringTableMetadata(RSTHashAlgorithm HashAlgorithm, byte Version) : IRStringTableMetadata
+public record class StringTableMetadata(RSTHashAlgorithm HashAlgorithm, byte Version) : IStringTableMetadata
 {
-    public static RStringTableMetadata Latest => Version5Patch1502;
+    public static StringTableMetadata Latest => Version5Patch1502;
 
     /// <summary>
     /// Represents the metadata for a string table with version 2.
@@ -28,37 +28,37 @@ public record class RStringTableMetadata(RSTHashAlgorithm HashAlgorithm, byte Ve
     /// <summary>
     /// Represents the metadata for a string table with version 3.
     /// </summary>
-    public static RStringTableMetadata Version3 => Create(RSTHashAlgorithmOptions.Version3, 3);
+    public static StringTableMetadata Version3 => Create(RSTHashAlgorithmOptions.Version3, 3);
 
     /// <summary>
     /// Represents the metadata for a string table with version 4.
     /// </summary>
-    public static RStringTableMetadata Version4 => Create(RSTHashAlgorithmOptions.Version4, 4);
+    public static StringTableMetadata Version4 => Create(RSTHashAlgorithmOptions.Version4, 4);
 
     /// <summary>
     /// Represents the metadata for a string table with version 5 (legacy).
     /// </summary>
-    public static RStringTableMetadata Version5Legacy => Create(RSTHashAlgorithmOptions.Version5, 5);
+    public static StringTableMetadata Version5Legacy => Create(RSTHashAlgorithmOptions.Version5, 5);
 
     /// <summary>
     /// Represents the metadata for a string table with version 5 and patch 14.15.
     /// </summary>
-    public static RStringTableMetadata Version5Patch1415 => Create(RSTHashAlgorithmOptions.Version5Patch1415, 5);
+    public static StringTableMetadata Version5Patch1415 => Create(RSTHashAlgorithmOptions.Version5Patch1415, 5);
 
     /// <summary>
     /// Represents the metadata for a string table with version 5 and patch 15.02.
     /// </summary>
-    public static RStringTableMetadata Version5Patch1502 => Create(RSTHashAlgorithmOptions.Version5Patch1502, 5);
+    public static StringTableMetadata Version5Patch1502 => Create(RSTHashAlgorithmOptions.Version5Patch1502, 5);
 
     /// <summary>
-    /// Creates a new instance of <see cref="RStringTableMetadata"/> with the specified hash algorithm options and version.
+    /// Creates a new instance of <see cref="StringTableMetadata"/> with the specified hash algorithm options and version.
     /// </summary>
     /// <param name="options">The hash algorithm options to use.</param>
     /// <param name="version">The version to set.</param>
-    /// <returns>A new instance of <see cref="RStringTableMetadata"/>.</returns>
-    public static RStringTableMetadata Create(RSTHashAlgorithmOptions options, byte version)
+    /// <returns>A new instance of <see cref="StringTableMetadata"/>.</returns>
+    public static StringTableMetadata Create(RSTHashAlgorithmOptions options, byte version)
     {
-        return new RStringTableMetadata(RSTHashAlgorithm.Create(options), version);
+        return new StringTableMetadata(RSTHashAlgorithm.Create(options), version);
     }
 
     /// <summary>
@@ -67,7 +67,7 @@ public record class RStringTableMetadata(RSTHashAlgorithm HashAlgorithm, byte Ve
     /// <param name="version">The version string to retrieve metadata for.</param>
     /// <returns>The metadata for the specified version.</returns>
     /// <exception cref="ArgumentException">The specified version is not supported.</exception>
-    public static IRStringTableMetadata GetMetadata(string version)
+    public static IStringTableMetadata GetMetadata(string version)
     {
         if (TryGetMetadata(version, out var metadata))
         {
@@ -83,7 +83,7 @@ public record class RStringTableMetadata(RSTHashAlgorithm HashAlgorithm, byte Ve
     /// <param name="metadata">The metadata to retrieve the version string for.</param>
     /// <returns>The version string associated with the specified metadata.</returns>
     /// <exception cref="ArgumentOutOfRangeException">The specified metadata is not supported.</exception>
-    public static string GetVersionString(IRStringTableMetadata metadata)
+    public static string GetVersionString(IStringTableMetadata metadata)
     {
         if (TryGetVersionString(metadata, out var result))
         {
@@ -99,7 +99,7 @@ public record class RStringTableMetadata(RSTHashAlgorithm HashAlgorithm, byte Ve
     /// <param name="metadata">The metadata to retrieve the version string for.</param>
     /// <param name="version">The version string associated with the specified metadata.</param>
     /// <returns><see langword="true"/> if the version string was successfully retrieved; otherwise, <see langword="false"/>.</returns>
-    public static bool TryGetVersionString(IRStringTableMetadata metadata, [NotNullWhen(true)] out string? version)
+    public static bool TryGetVersionString(IStringTableMetadata metadata, [NotNullWhen(true)] out string? version)
     {
         version = metadata switch
         {
@@ -151,7 +151,7 @@ public record class RStringTableMetadata(RSTHashAlgorithm HashAlgorithm, byte Ve
     /// <param name="version">The version string to retrieve metadata for.</param>
     /// <param name="metadata">The metadata for the specified version.</param>
     /// <returns><see langword="true"/> if the metadata was successfully retrieved; otherwise, <see langword="false"/>.</returns>
-    public static bool TryGetMetadata([NotNullWhen(true)] string? version, [NotNullWhen(true)] out IRStringTableMetadata? metadata)
+    public static bool TryGetMetadata([NotNullWhen(true)] string? version, [NotNullWhen(true)] out IStringTableMetadata? metadata)
     {
         if (version is null or { Length: < 1 })
         {

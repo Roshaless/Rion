@@ -18,15 +18,15 @@ namespace Rion.Core.Serialization;
 /// Derived classes must implement the <see cref="DeserializeCore"/> and <see cref="SerializeCore"/> methods to handle
 /// the specific serialization format.
 /// </remarks>
-public abstract partial class RStringTableConverter
+public abstract partial class StringTableConverter
 {
     /// <summary>
-    /// Initializes a new instance of the <see cref="RStringTableConverter"/> class, specifying the types used for
+    /// Initializes a new instance of the <see cref="StringTableConverter"/> class, specifying the types used for
     /// deserialization and serialization.
     /// </summary>
     /// <param name="deserializedType">The type that will be used during deserialization.</param>
     /// <param name="serializedType">The type that will be used during serialization.</param>
-    internal RStringTableConverter(Type deserializedType, Type serializedType)
+    internal StringTableConverter(Type deserializedType, Type serializedType)
     {
         _deserializedType = deserializedType;
         _serializedType = serializedType;

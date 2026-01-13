@@ -13,10 +13,10 @@ namespace Rion.Core;
 /// <summary>
 /// Represents a string table, which is a collection of key-value pairs where the keys are hashed strings and the values are strings.
 /// </summary>
-public interface IRStringTable : IEnumerable<KeyValuePair<ulong, string>>
+public interface IStringTable : IEnumerable<KeyValuePair<ulong, string>>
 {
     /// <summary>
     /// Gets the metadata associated with the string table, including hash algorithm and version details.
     /// </summary>
-    IRStringTableMetadata Metadata { get; }
+    IStringTableMetadata Metadata { get; }
 }

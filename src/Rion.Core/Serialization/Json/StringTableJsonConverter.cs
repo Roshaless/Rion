@@ -10,6 +10,7 @@ using System.Linq;
 using System.Text.Encodings.Web;
 using System.Text.Json;
 
+using Rion.Core.Hashing;
 using Rion.Core.Internal;
 using Rion.Core.Metadata;
 
@@ -18,29 +19,29 @@ using Rion.Core.Metadata;
 namespace Rion.Core.Serialization;
 
 /// <summary>
-/// Provides a JSON converter for serializing and deserializing <see cref="RStringTable"/> objects.
+/// Provides a JSON converter for serializing and deserializing <see cref="StringTable"/> objects.
 /// </summary>
 /// <remarks>
-/// This converter handles the serialization and deserialization of <see cref="RStringTable"/> instances,
+/// This converter handles the serialization and deserialization of <see cref="StringTable"/> instances,
 /// including their metadata and entries. It ensures compatibility with the expected JSON structure,
 /// which includes properties for version, configuration, and entries.
 /// </remarks>
-public sealed class RStringTableJsonConverter : RStringTableConverter<RStringTable, IRStringTable>
+public sealed class StringTableJsonConverter : StringTableConverter<StringTable, IStringTable>
 {
     /// <summary>
-    /// Provides a thread-safe, lazily initialized instance of <see cref="RStringTableConverter{TTable, TInterface}"/>
-    /// for converting between <see cref="RStringTable"/> and <see cref="IRStringTable"/>.
+    /// Provides a thread-safe, lazily initialized instance of <see cref="StringTableConverter{TTable, TInterface}"/>
+    /// for converting between <see cref="StringTable"/> and <see cref="IStringTable"/>.
     /// </summary>
     /// <remarks>
     /// The <see cref="Lazy{T}"/> ensures that the instance is created only when it is first
     /// accessed, making it efficient for scenarios where the converter may not always be needed.
     /// </remarks>
-    private static readonly Lazy<RStringTableJsonConverter> s_lazy = new();
+    private static readonly Lazy<StringTableJsonConverter> s_lazy = new();
 
     /// <summary>
-    /// Gets the singleton instance of the <see cref="RStringTableConverter{RStringTable, IRStringTable}"/> class.
+    /// Gets the singleton instance of the <see cref="StringTableConverter{RStringTable, IRStringTable}"/> class.
     /// </summary>
-    public static RStringTableJsonConverter Instance => s_lazy.Value;
+    public static StringTableJsonConverter Instance => s_lazy.Value;
 
     /// The names of the JSON properties.
     private const string JsonConfigName = "config";
@@ -48,7 +49,7 @@ public sealed class RStringTableJsonConverter : RStringTableConverter<RStringTab
     private const string JsonVersionName = "version";
 
     /// <inheritdoc />
-    public override RStringTable Deserialize(ReadOnlySpan<byte> bytes)
+    public override StringTable Deserialize(ReadOnlySpan<byte> bytes)
     {
         // Create a reader to read the JSON
         var reader = new Utf8JsonReader(bytes, new() { CommentHandling = JsonCommentHandling.Skip });
@@ -64,10 +65,10 @@ public sealed class RStringTableJsonConverter : RStringTableConverter<RStringTab
         }
 
         // Read the metadata
-        var metadata = TryReadMetadata(jsonDocument.RootElement) ?? RStringTableMetadata.Latest;
+        var metadata = TryReadMetadata(jsonDocument.RootElement) ?? StringTableMetadata.Latest;
 
         // Create the string table
-        var stringTable = RStringTable.Create(metadata, entries.EnumerateObject().Count());
+        var stringTable = StringTable.Create(metadata, entries.EnumerateObject().Count());
         {
             foreach (var jsonObject in entries.EnumerateObject())
             {
@@ -84,15 +85,15 @@ public sealed class RStringTableJsonConverter : RStringTableConverter<RStringTab
 
         return stringTable;
 
-        static IRStringTableMetadata? TryReadMetadata(JsonElement rootElement)
+        static IStringTableMetadata? TryReadMetadata(JsonElement rootElement)
         {
-            IRStringTableMetadata? metadata;
+            IStringTableMetadata? metadata;
             if (rootElement.TryGetProperty(JsonVersionName, out var version))
             {
                 // ReSharper disable once ConvertIfStatementToSwitchStatement
                 if (version.ValueKind == JsonValueKind.String)
                 {
-                    RStringTableMetadata.TryGetMetadata(version.GetString(), out metadata);
+                    StringTableMetadata.TryGetMetadata(version.GetString(), out metadata);
                 }
                 else
                 {
@@ -123,7 +124,7 @@ public sealed class RStringTableJsonConverter : RStringTableConverter<RStringTab
     }
 
     /// <inheritdoc />
-    public override void Serialize(Stream stream, IRStringTable stringTable)
+    public override void Serialize(Stream stream, IStringTable stringTable)
     {
         var writer = new Utf8JsonWriter(stream, new()
         {
@@ -134,7 +135,7 @@ public sealed class RStringTableJsonConverter : RStringTableConverter<RStringTab
         writer.WriteStartObject();
         {
             writer.WritePropertyName(JsonVersionName);
-            writer.WriteStringValue(RStringTableMetadata.GetVersionString(stringTable.Metadata));
+            writer.WriteStringValue(StringTableMetadata.GetVersionString(stringTable.Metadata));
 
             if (stringTable.Metadata is ILegacyFontConfigMetadata legacyMetadata)
             {
@@ -148,9 +149,9 @@ public sealed class RStringTableJsonConverter : RStringTableConverter<RStringTab
             writer.WritePropertyName(JsonEntriesName);
             writer.WriteStartObject();
             {
-                foreach (var pair in stringTable.OrderBy(item => RHashtable.GetNameOrHexString(item.Key)))
+                foreach (var pair in stringTable.OrderBy(item => RSTHashtable.GetNameOrHexString(item.Key)))
                 {
-                    writer.WriteProperty(RHashtable.GetNameOrHexString(pair.Key), pair.Value);
+                    writer.WriteProperty(RSTHashtable.GetNameOrHexString(pair.Key), pair.Value);
                 }
             }
             writer.WriteEndObject();

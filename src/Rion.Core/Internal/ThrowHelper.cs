@@ -49,7 +49,7 @@ internal static class ThrowHelper
     /// <exception cref="InvalidOperationException">Thrown if the <paramref name="converter"/> cannot serialize the specified <paramref name="targetType"/>.</exception>
     [DoesNotReturn]
     [DebuggerStepThrough]
-    public static void ThrowIfCanNotSerialize(RStringTableConverter converter, Type targetType)
+    public static void ThrowIfCanNotSerialize(StringTableConverter converter, Type targetType)
         => throw new InvalidOperationException(
             $"The converter '{converter.GetType().Name}' cannot serialize the type '{targetType.FullName}'." +
             $" Supported type: '{converter._serializedType.FullName}'.");

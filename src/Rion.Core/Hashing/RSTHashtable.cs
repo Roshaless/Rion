@@ -9,14 +9,12 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 
-using Rion.Core.Hashing;
-
-namespace Rion.Core;
+namespace Rion.Core.Hashing;
 
 /// <summary>
 /// Represents a hashtable used for string tables.
 /// </summary>
-public static class RHashtable
+public static class RSTHashtable
 {
     /// <summary>
     /// The loaded hashtable.

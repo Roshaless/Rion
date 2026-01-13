@@ -19,27 +19,27 @@ namespace Rion.Core.Serialization;
 /// Provides methods for serializing and deserializing string table objects to and from various formats.
 /// </summary>
 /// <remarks>
-/// The <see cref="RStringTableSerializer"/> class includes static methods for handling serialization and
-/// deserialization of objects that implement the <see cref="IRStringTable"/> interface. It supports operations on byte
+/// The <see cref="StringTableSerializer"/> class includes static methods for handling serialization and
+/// deserialization of objects that implement the <see cref="IStringTable"/> interface. It supports operations on byte
 /// spans, streams, and file paths, and relies on user-provided converters to perform the actual serialization or
 /// deserialization logic.
 /// </remarks>
-public static partial class RStringTableSerializer
+public static partial class StringTableSerializer
 {
     /// <summary>
     /// Deserializes a byte span into an object of the specified type using the provided converter.
     /// </summary>
-    /// <typeparam name="TDeserialized">The type of the deserialized object. Must implement <see cref="IRStringTable"/>.</typeparam>
-    /// <typeparam name="TSerialized">The intermediate serialized type. Must implement <see cref="IRStringTable"/>.</typeparam>
+    /// <typeparam name="TDeserialized">The type of the deserialized object. Must implement <see cref="IStringTable"/>.</typeparam>
+    /// <typeparam name="TSerialized">The intermediate serialized type. Must implement <see cref="IStringTable"/>.</typeparam>
     /// <param name="bytes">The span of bytes representing the serialized data.</param>
     /// <param name="converter">The converter used to perform the deserialization. Cannot be <see langword="null"/>.</param>
     /// <returns>An instance of <typeparamref name="TDeserialized"/> created from the serialized data.</returns>
     public static TDeserialized Deserialize<TDeserialized, TSerialized>(
         ReadOnlySpan<byte> bytes,
-        RStringTableConverter<TDeserialized, TSerialized> converter
+        StringTableConverter<TDeserialized, TSerialized> converter
     )
-        where TDeserialized : class, IRStringTable
-        where TSerialized : IRStringTable
+        where TDeserialized : class, IStringTable
+        where TSerialized : IStringTable
     {
         ArgumentNullException.ThrowIfNull(converter);
 
@@ -54,8 +54,8 @@ public static partial class RStringTableSerializer
     /// the specified type,  the method returns <see langword="false"/> and sets <paramref name="result"/>
     /// to <see langword="null"/>.
     /// </remarks>
-    /// <typeparam name="TDeserialized">The target type to deserialize into. Must implement <see cref="IRStringTable"/>.</typeparam>
-    /// <typeparam name="TSerialized">The serialized type. Must implement <see cref="IRStringTable"/>.</typeparam>
+    /// <typeparam name="TDeserialized">The target type to deserialize into. Must implement <see cref="IStringTable"/>.</typeparam>
+    /// <typeparam name="TSerialized">The serialized type. Must implement <see cref="IStringTable"/>.</typeparam>
     /// <param name="bytes">The sequence of bytes to deserialize.</param>
     /// <param name="converter">The converter used to perform the deserialization. Must not be <see langword="null"/> and must support
     /// deserialization of <typeparamref name="TDeserialized"/>.</param>
@@ -64,11 +64,11 @@ public static partial class RStringTableSerializer
     /// <returns><see langword="true"/> if the deserialization was successful; otherwise, <see langword="false"/>.</returns>
     public static bool TryDeserialize<TDeserialized, TSerialized>(
         ReadOnlySpan<byte> bytes,
-        RStringTableConverter<TDeserialized, TSerialized> converter,
+        StringTableConverter<TDeserialized, TSerialized> converter,
         [NotNullWhen(true)] out TDeserialized? result
     )
-        where TDeserialized : class, IRStringTable
-        where TSerialized : IRStringTable
+        where TDeserialized : class, IStringTable
+        where TSerialized : IStringTable
     {
         if (converter.IsNotNull() && converter.CanDeserialize(typeof(TDeserialized)))
         {
@@ -95,8 +95,8 @@ public static partial class RStringTableSerializer
     /// if the converter does not support deserialization of <typeparamref name="TDeserialized"/>,
     /// or if an error occurs during deserialization.
     /// </remarks>
-    /// <typeparam name="TDeserialized">The type of the object to deserialize. Must implement <see cref="IRStringTable"/>.</typeparam>
-    /// <typeparam name="TSerialized">The type of the serialized representation. Must implement <see cref="IRStringTable"/>.</typeparam>
+    /// <typeparam name="TDeserialized">The type of the object to deserialize. Must implement <see cref="IStringTable"/>.</typeparam>
+    /// <typeparam name="TSerialized">The type of the serialized representation. Must implement <see cref="IStringTable"/>.</typeparam>
     /// <param name="path">The file path to the serialized data.</param>
     /// <param name="converter">The converter used to deserialize the data. Must not be <see langword="null"/> and must support deserialization
     /// of <typeparamref name="TDeserialized"/>.</param>
@@ -106,18 +106,18 @@ public static partial class RStringTableSerializer
     /// name="TDeserialized"/>; otherwise, <see langword="false"/>.</returns>
     public static bool TryDeserialize<TDeserialized, TSerialized>(
         string path,
-        RStringTableConverter<TDeserialized, TSerialized> converter,
+        StringTableConverter<TDeserialized, TSerialized> converter,
         [NotNullWhen(true)] out TDeserialized? result
     )
-        where TDeserialized : class, IRStringTable
-        where TSerialized : IRStringTable
+        where TDeserialized : class, IStringTable
+        where TSerialized : IStringTable
     {
         if (converter.IsNotNull() && converter.CanDeserialize(typeof(TDeserialized)))
         {
-            RFileBufferScope? scope = null;
+            FileBufferScope? scope = null;
             try
             {
-                scope = RFileBufferScope.CreateFrom(path);
+                scope = FileBufferScope.CreateFrom(path);
                 result = converter.DeserializeCore(scope.Span) as TDeserialized;
                 return result is not null;
             }
@@ -143,7 +143,7 @@ public static partial class RStringTableSerializer
     /// is capable of serializing the specified string table type before delegating the serialization
     /// process to the converter.
     /// </remarks>
-    /// <typeparam name="T">The type of the string table to serialize. Must implement <see cref="IRStringTable"/>.</typeparam>
+    /// <typeparam name="T">The type of the string table to serialize. Must implement <see cref="IStringTable"/>.</typeparam>
     /// <param name="output">The stream to which the string table will be serialized. Must not be <see langword="null"/>.</param>
     /// <param name="stringTable">The string table to serialize. Must not be <see langword="null"/>.</param>
     /// <param name="converter">The converter used to perform the serialization. Must not be <see langword="null"/> and must support
@@ -151,8 +151,8 @@ public static partial class RStringTableSerializer
     public static void Serialize<T>(
         Stream output,
         T stringTable,
-        RStringTableConverter converter
-    ) where T : IRStringTable
+        StringTableConverter converter
+    ) where T : IStringTable
     {
         ArgumentNullException.ThrowIfNull(output);
         ArgumentNullException.ThrowIfNull(stringTable);
@@ -169,15 +169,15 @@ public static partial class RStringTableSerializer
     /// This method creates or overwrites the file at the specified <paramref name="outputPath"/>. 
     /// Ensure the caller has appropriate permissions to write to the file system at the specified location.
     /// </remarks>
-    /// <typeparam name="T">The type of the string table to serialize. Must implement <see cref="IRStringTable"/>.</typeparam>
+    /// <typeparam name="T">The type of the string table to serialize. Must implement <see cref="IStringTable"/>.</typeparam>
     /// <param name="outputPath">The file path where the serialized data will be written. Cannot be null or empty.</param>
     /// <param name="stringTable">The string table to serialize. Cannot be null.</param>
     /// <param name="converter">The converter used to perform the serialization. Cannot be null.</param>
     public static void Serialize<T>(
         string outputPath,
         T stringTable,
-        RStringTableConverter converter
-    ) where T : IRStringTable
+        StringTableConverter converter
+    ) where T : IStringTable
     {
         ArgumentException.ThrowIfNullOrEmpty(outputPath);
         ArgumentNullException.ThrowIfNull(stringTable);
@@ -196,17 +196,17 @@ public static partial class RStringTableSerializer
     /// type, the method will return <see langword="false"/>. If an exception occurs during serialization, the method
     /// will log a warning and return <see langword="false"/>.
     /// </remarks>
-    /// <typeparam name="T">The type of the string table to serialize. Must implement <see cref="IRStringTable"/>.</typeparam>
+    /// <typeparam name="T">The type of the string table to serialize. Must implement <see cref="IStringTable"/>.</typeparam>
     /// <param name="output">The <see cref="Stream"/> to which the string table will be serialized. Must be writable.</param>
     /// <param name="stringTable">The string table instance to serialize.</param>
-    /// <param name="converter">The <see cref="RStringTableConverter"/> used to perform the serialization. Must not be <see langword="null"/>
+    /// <param name="converter">The <see cref="StringTableConverter"/> used to perform the serialization. Must not be <see langword="null"/>
     /// and must support serialization of the specified type.</param>
     /// <returns><see langword="true"/> if the string table was successfully serialized; otherwise, <see langword="false"/>.</returns>
     public static bool TrySerialize<T>(
         Stream output,
         T stringTable,
-        RStringTableConverter converter
-    ) where T : IRStringTable
+        StringTableConverter converter
+    ) where T : IStringTable
     {
         if (converter.IsNotNull() && converter.CanSerialize(typeof(T)))
         {
@@ -232,7 +232,7 @@ public static partial class RStringTableSerializer
     /// type), the method logs a warning and returns <see langword="false"/>. Ensure that the
     /// <paramref name="converter"/> is properly configured to handle the type of the string table being serialized.
     /// </remarks>
-    /// <typeparam name="T">The type of the string table to serialize. Must implement <see cref="IRStringTable"/>.</typeparam>
+    /// <typeparam name="T">The type of the string table to serialize. Must implement <see cref="IStringTable"/>.</typeparam>
     /// <param name="outputPath">The file path where the serialized string table will be written. This path must be writable.</param>
     /// <param name="stringTable">The string table to serialize. Must not be <see langword="null"/>.</param>
     /// <param name="converter">The converter used to serialize the string table. Must not be <see langword="null"/> and must support
@@ -242,8 +242,8 @@ public static partial class RStringTableSerializer
     public static bool TrySerialize<T>(
         string outputPath,
         T stringTable,
-        RStringTableConverter converter
-    ) where T : IRStringTable
+        StringTableConverter converter
+    ) where T : IStringTable
     {
         if (converter.IsNotNull() && converter.CanSerialize(typeof(T)))
         {

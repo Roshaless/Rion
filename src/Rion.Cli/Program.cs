@@ -15,8 +15,8 @@ using Rion.Core.Hashing;
 using Rion.Core.Serialization;
 
 
-var toWriteRst = new List<(string, IRStringTable)>();
-var writeToJson = new List<(string, IRStringTable)>();
+var toWriteRst = new List<(string, IStringTable)>();
+var writeToJson = new List<(string, IStringTable)>();
 
 foreach (var file in args)
 {
@@ -28,15 +28,15 @@ foreach (var file in args)
             fileStream.Dispose();
         }
 
-        using var scope = RFileBufferScope.CreateFrom(file);
+        using var scope = FileBufferScope.CreateFrom(file);
 
         if (firstByte is 0x52)
         {
-            writeToJson.Add((file, RStringTable.ReadAsRecord(scope.Span)));
+            writeToJson.Add((file, StringTable.ReadAsRecord(scope.Span)));
         }
         else
         {
-            toWriteRst.Add((file, RStringTableSerializer.DeserializeFromJson(scope.Span)));
+            toWriteRst.Add((file, StringTableSerializer.DeserializeFromJson(scope.Span)));
         }
     }
     catch
@@ -55,7 +55,7 @@ DoConvert(writeToJson, (x =>
 {
     var outputPath = ChangeExt(x.Item1, ".json");
     {
-        RStringTableSerializer.SerializeToJsonFile(outputPath, x.Item2);
+        StringTableSerializer.SerializeToJsonFile(outputPath, x.Item2);
     }
 
     return outputPath;
@@ -64,11 +64,11 @@ DoConvert(writeToJson, (x =>
 DoConvert(toWriteRst, (x =>
 {
     var outputPath = ChangeExt(x.Item1, ".stringtable");
-    RStringTable.Write(outputPath, x.Item2);
+    StringTable.Write(outputPath, x.Item2);
     return outputPath;
 }));
 
-static void DoConvert(List<(string, IRStringTable)> collection, Func<(string, IRStringTable), string> convert)
+static void DoConvert(List<(string, IStringTable)> collection, Func<(string, IStringTable), string> convert)
 {
     foreach (var item in collection)
     {
@@ -103,7 +103,7 @@ static void LoadHashes(string hashesDir, params RSTHashAlgorithm[] hashAlgorithm
             {
                 try
                 {
-                    RHashtable.LoadFromStrings(File.ReadAllLines(path), hashAlgorithm);
+                    RSTHashtable.LoadFromStrings(File.ReadAllLines(path), hashAlgorithm);
                 }
                 catch (Exception)
                 {

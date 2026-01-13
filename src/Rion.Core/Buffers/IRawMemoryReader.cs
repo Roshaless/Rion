@@ -13,7 +13,7 @@ namespace Rion.Core.Buffers;
 /// Defines a contract for reading from a buffer with capabilities to read sequences of bytes,
 /// unmanaged values, and structs while tracking the read position.
 /// </summary>
-public interface IRBufferReader
+public interface IRawMemoryReader
 {
     /// <summary>
     /// Gets the total number of bytes available for reading in the buffer.

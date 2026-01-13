@@ -16,7 +16,7 @@ namespace Rion.Core.Buffers;
 /// Represents a reader for reading data from a buffer.
 /// This class provides methods to read bytes, structures, and strings from a given buffer.
 /// </summary>
-public sealed class RBufferReader : IRBufferReader
+public sealed class RawMemoryReader : IRawMemoryReader
 {
     /// <summary>
     /// Pointer reference to the start of the buffer data.
@@ -27,7 +27,7 @@ public sealed class RBufferReader : IRBufferReader
     /// Provides functionality to read string table data from a binary buffer.
     /// Initializes with buffer data and a provider to handle file properties and string retrieval.
     /// </summary>
-    public RBufferReader(ReadOnlySpan<byte> data)
+    public RawMemoryReader(ReadOnlySpan<byte> data)
     {
         unsafe
         {

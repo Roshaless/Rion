@@ -13,17 +13,17 @@ using Rion.Core.Internal;
 
 namespace Rion.Core;
 
-public partial class RStringTableWriter
+public partial class StringTableFileWriter
 {
     /// <summary>
     /// Represents a memory-based encoder for strings, optimized for fast encoding operations.
     /// </summary>
     /// <remarks>
     /// This class is not intended for direct instantiation outside its enclosing class.
-    /// It is used internally within the <see cref="RStringTableWriter"/> to efficiently
+    /// It is used internally within the <see cref="StringTableFileWriter"/> to efficiently
     /// encode and manage string data.
     /// </remarks>
-    private sealed class RStringEncoder : SafeHandle
+    private sealed class StringEncoder : SafeHandle
     {
         /// <summary>
         /// Represents the zero byte value, used for padding or termination in various encoding scenarios.
@@ -31,7 +31,7 @@ public partial class RStringTableWriter
         private const byte ZeroByte = 0b_00_00;
 
         /// <summary>
-        /// The character encoding used for string conversion operations within the <see cref="RStringEncoder"/>.
+        /// The character encoding used for string conversion operations within the <see cref="StringEncoder"/>.
         /// Defaults to UTF-8 encoding.
         /// </summary>
         private readonly Encoding _encoding = Encoding.UTF8;
@@ -50,10 +50,10 @@ public partial class RStringTableWriter
         /// </summary>
         /// <remarks>
         /// This class is not intended for direct instantiation outside its enclosing class.
-        /// It is used internally within the <see cref="RStringTableWriter"/> to efficiently
+        /// It is used internally within the <see cref="StringTableFileWriter"/> to efficiently
         /// encode and manage string data.
         /// </remarks>
-        public RStringEncoder(int capacity) : base(nint.Zero, true)
+        public StringEncoder(int capacity) : base(nint.Zero, true)
         {
             unsafe
             {

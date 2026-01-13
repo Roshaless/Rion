@@ -10,17 +10,17 @@ using Rion.Core.Buffers;
 
 namespace Rion.Core;
 
-public partial class RStringTable
+public partial class StringTable
 {
     /// <summary>
     /// Reads an RStringTable from the specified file path.
     /// </summary>
     /// <param name="path">The path to the file containing the RStringTable data. Must not be null or empty.</param>
-    /// <returns>An <see cref="RStringTable"/> instance populated with the data from the specified file.</returns>
-    public static RStringTable Read(string path)
+    /// <returns>An <see cref="StringTable"/> instance populated with the data from the specified file.</returns>
+    public static StringTable Read(string path)
     {
-        using var scope = RFileBufferScope.CreateFrom(path);
-        var reader = new RStringTableReader(scope.Span);
+        using var scope = FileBufferScope.CreateFrom(path);
+        var reader = new StringTableFileReader(scope.Span);
 
         return Create(reader.Metadata, reader.ReadAll());
     }
@@ -30,13 +30,13 @@ public partial class RStringTable
     /// </summary>
     /// <remarks>
     /// This method parses the binary data into a string table, extracting metadata and entries.
-    /// The returned <see cref="RStringTable"/> is immutable and represents the complete parsed data.
+    /// The returned <see cref="StringTable"/> is immutable and represents the complete parsed data.
     /// </remarks>
     /// <param name="data">A read-only span of bytes containing the binary data to parse.</param>
-    /// <returns>An <see cref="RStringTable"/> instance representing the parsed string table.</returns>
-    public static RStringTable Read(ReadOnlySpan<byte> data)
+    /// <returns>An <see cref="StringTable"/> instance representing the parsed string table.</returns>
+    public static StringTable Read(ReadOnlySpan<byte> data)
     {
-        var reader = new RStringTableReader(data);
+        var reader = new StringTableFileReader(data);
         var entries = reader.ReadAll();
 
         return Create(reader.Metadata, entries);

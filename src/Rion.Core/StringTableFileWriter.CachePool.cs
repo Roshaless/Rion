@@ -13,25 +13,25 @@ using Rion.Core.Internal;
 
 namespace Rion.Core;
 
-public partial class RStringTableWriter
+public partial class StringTableFileWriter
 {
     /// <summary>
-    /// Manages a pool of <see cref="RBufferWriter"/> instances specifically for <see cref="RStringTableWriter"/>
+    /// Manages a pool of <see cref="RawMemoryWriter"/> instances specifically for <see cref="StringTableFileWriter"/>
     /// operations, promoting efficient recycling and resource management to enhance performance and minimize
     /// memory allocation overhead during string table population.
     /// </summary>
-    private sealed class RBufferWriterCachePool : RCachePool<RBufferWriter>
+    private sealed class BufferWriterCachePool : CachePool<RawMemoryWriter>
     {
         /// <summary>
-        /// Gets a shared <see cref="RBufferWriterCachePool" /> instance.
+        /// Gets a shared <see cref="BufferWriterCachePool" /> instance.
         /// </summary>
-        public static RBufferWriterCachePool Shared { get; } = new();
+        public static BufferWriterCachePool Shared { get; } = new();
 
         /// <inheritdoc />
-        public override void Reset(RBufferWriter obj) => obj.Reset();
+        public override void Reset(RawMemoryWriter obj) => obj.Reset();
 
         /// <inheritdoc />
-        public override RBufferWriter CreateDefault() => new(1 << 22);
+        public override RawMemoryWriter CreateDefault() => new(1 << 22);
     }
 
     /// <summary>
@@ -39,7 +39,7 @@ public partial class RStringTableWriter
     /// specifically tailored for efficient reuse within string table operations. This class ensures that
     /// memory is effectively managed by recycling and cleaning up dictionary objects to minimize allocation overhead.
     /// </summary>
-    private sealed class InternDictCachePool : RCachePool<Dictionary<string, int>>
+    private sealed class InternDictCachePool : CachePool<Dictionary<string, int>>
     {
         /// <summary>
         /// Gets a shared <see cref="InternDictCachePool" /> instance.
@@ -58,11 +58,11 @@ public partial class RStringTableWriter
     /// This class is designed to minimize memory allocation and deallocation overhead byrenting and returning objects from/to the cache pool.
     /// </summary>
     /// <typeparam name="T">The type of objects managed by this cache pool. Must be a reference type.</typeparam>
-    private abstract class RCachePool<T> where T : class
+    private abstract class CachePool<T> where T : class
     {
         /// <summary>
         /// A private collection that maintains weak references to cached objects of type <typeparamref name="T"/>.
-        /// These objects are managed by the <see cref="RCachePool{T}"/> to facilitate efficient reuse and reduce memory allocations.
+        /// These objects are managed by the <see cref="CachePool{T}"/> to facilitate efficient reuse and reduce memory allocations.
         /// </summary>
         private readonly List<WeakReference> _cachedObjects = [];
 
@@ -147,7 +147,7 @@ public partial class RStringTableWriter
         private sealed class CacheWrap(T obj)
         {
             /// <summary>
-            /// Represents the cached object within the <see cref="CacheWrap"/> which is managed by the <see cref="RCachePool{T}"/> to optimize performance by reusing instances.
+            /// Represents the cached object within the <see cref="CacheWrap"/> which is managed by the <see cref="CachePool{T}"/> to optimize performance by reusing instances.
             /// </summary>
             internal T CacheObj { get; } = obj;
 

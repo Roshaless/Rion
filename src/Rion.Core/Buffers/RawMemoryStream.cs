@@ -17,7 +17,7 @@ namespace Rion.Core.Buffers;
 /// <summary>
 ///  A stream-like class that provides a buffer for writing and reading data.
 /// </summary>
-public sealed class RBufferStream : Stream
+public sealed class RawMemoryStream : Stream
 {
     /// <summary>
     ///  A handle to the buffer's underlying memory.
@@ -80,20 +80,20 @@ public sealed class RBufferStream : Stream
     }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="RBufferStream"/> class.
+    /// Initializes a new instance of the <see cref="RawMemoryStream"/> class.
     /// </summary>
-    public RBufferStream() : this(RBufferWriter.DefaultCapacity) { }
+    public RawMemoryStream() : this(RawMemoryWriter.DefaultCapacity) { }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="RBufferStream"/> class with the specified capacity.
+    /// Initializes a new instance of the <see cref="RawMemoryStream"/> class with the specified capacity.
     /// </summary>
     /// <param name="capacity">The capacity to init.</param>
-    public RBufferStream(int capacity)
+    public RawMemoryStream(int capacity)
     {
 
         if (capacity <= 0)
         {
-            capacity = RBufferWriter.DefaultCapacity;
+            capacity = RawMemoryWriter.DefaultCapacity;
         }
 
         unsafe

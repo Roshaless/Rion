@@ -11,7 +11,7 @@ namespace Rion.Core.Buffers;
 /// <summary>
 /// Defines a contract for writing bytes into a buffer with control over the buffer's state.
 /// </summary>
-public interface IRBufferWriter : IDisposable
+public interface IRawMemoryWriter : IDisposable
 {
     /// <summary>
     /// Gets the current length of the buffer.

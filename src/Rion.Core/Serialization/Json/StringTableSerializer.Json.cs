@@ -9,29 +9,29 @@ using System.IO;
 
 namespace Rion.Core.Serialization;
 
-public static partial class RStringTableSerializer
+public static partial class StringTableSerializer
 {
     /// <summary>
-    /// Deserializes a JSON-encoded byte span into an <see cref="RStringTable"/> object.
+    /// Deserializes a JSON-encoded byte span into an <see cref="StringTable"/> object.
     /// </summary>
     /// <param name="bytes">A span of bytes containing the JSON data to deserialize. The span must represent a valid JSON-encoded <see
-    /// cref="RStringTable"/> object.</param>
-    /// <returns>An <see cref="RStringTable"/> object deserialized from the provided JSON data.</returns>
-    public static RStringTable DeserializeFromJson(Span<byte> bytes)
+    /// cref="StringTable"/> object.</param>
+    /// <returns>An <see cref="StringTable"/> object deserialized from the provided JSON data.</returns>
+    public static StringTable DeserializeFromJson(Span<byte> bytes)
     {
-        return RStringTableJsonConverter.Instance.Deserialize(bytes);
+        return StringTableJsonConverter.Instance.Deserialize(bytes);
     }
 
     /// <summary>
-    /// Deserializes a JSON-encoded byte span into an <see cref="RStringTable"/> object.
+    /// Deserializes a JSON-encoded byte span into an <see cref="StringTable"/> object.
     /// </summary>
-    /// <remarks>This method uses the <see cref="RStringTableJsonConverter"/> to perform the deserialization.
-    /// Ensure that the input JSON conforms to the expected structure of an <see cref="RStringTable"/>.</remarks>
+    /// <remarks>This method uses the <see cref="StringTableJsonConverter"/> to perform the deserialization.
+    /// Ensure that the input JSON conforms to the expected structure of an <see cref="StringTable"/>.</remarks>
     /// <param name="bytes">A read-only span of bytes containing the JSON-encoded data to deserialize.</param>
-    /// <returns>An instance of <see cref="RStringTable"/> representing the deserialized data.</returns>
-    public static RStringTable DeserializeFromJson(ReadOnlySpan<byte> bytes)
+    /// <returns>An instance of <see cref="StringTable"/> representing the deserialized data.</returns>
+    public static StringTable DeserializeFromJson(ReadOnlySpan<byte> bytes)
     {
-        return RStringTableJsonConverter.Instance.Deserialize(bytes);
+        return StringTableJsonConverter.Instance.Deserialize(bytes);
     }
 
     /// <summary>
@@ -40,12 +40,12 @@ public static partial class RStringTableSerializer
     /// <param name="output">The stream to which the JSON representation of the string table will be written. Cannot be <see
     /// langword="null"/>.</param>
     /// <param name="stringTable">The string table to serialize. Cannot be <see langword="null"/>.</param>
-    public static void SerializeToJson(Stream output, IRStringTable stringTable)
+    public static void SerializeToJson(Stream output, IStringTable stringTable)
     {
         ArgumentNullException.ThrowIfNull(output);
         ArgumentNullException.ThrowIfNull(stringTable);
 
-        RStringTableJsonConverter.Instance.Serialize(output, stringTable);
+        StringTableJsonConverter.Instance.Serialize(output, stringTable);
     }
 
     /// <summary>
@@ -58,12 +58,12 @@ public static partial class RStringTableSerializer
     /// <param name="outputPath">The file path where the JSON representation of the string table will be written. Cannot be <see
     /// langword="null"/>.</param>
     /// <param name="stringTable">The string table to serialize. Cannot be <see langword="null"/>.</param>
-    public static void SerializeToJsonFile(string outputPath, IRStringTable stringTable)
+    public static void SerializeToJsonFile(string outputPath, IStringTable stringTable)
     {
         ArgumentNullException.ThrowIfNull(outputPath);
         ArgumentNullException.ThrowIfNull(stringTable);
 
         using var stream = Internal.FileOperations.OpenOrCreate(outputPath);
-        RStringTableJsonConverter.Instance.Serialize(stream, stringTable);
+        StringTableJsonConverter.Instance.Serialize(stream, stringTable);
     }
 }

@@ -11,7 +11,7 @@ namespace Rion.Core.Metadata;
 /// <summary>
 /// Defines the contract for metadata of a string table, specifying the hash algorithm and version details.
 /// </summary>
-public interface IRStringTableMetadata
+public interface IStringTableMetadata
 {
     /// <summary>
     /// Gets the hash algorithm instance used for generating hashes within the string table.

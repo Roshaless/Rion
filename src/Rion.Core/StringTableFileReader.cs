@@ -20,7 +20,7 @@ namespace Rion.Core;
 /// <summary>
 /// Represents a reader for string tables stored in binary format, enabling efficient retrieval of hashed strings and their content.
 /// </summary>
-public sealed class RStringTableReader
+public sealed class StringTableFileReader
 {
     /// <summary>
     /// bitmask applied to raw hash values to isolate the actual hash for operations,
@@ -50,27 +50,27 @@ public sealed class RStringTableReader
 
     /// <summary>
     /// The provider instance responsible for reading string table properties and converting binary data into strings.
-    /// It holds a reference to an <see cref="RStringTableReaderProvider"/> implementation,
+    /// It holds a reference to an <see cref="StringTableFileReaderProvider"/> implementation,
     /// defining behaviors crucial for interpreting the string table's binary format.
     /// </summary>
-    private readonly RStringTableReaderProvider _provider;
+    private readonly StringTableFileReaderProvider _provider;
 
     /// <summary>
     /// Represents a reader for string tables, providing functionality to read hashes and string content from binary data.
     /// </summary>
-    public RStringTableReader(ReadOnlySpan<byte> data) : this(data, RStringTableReaderProvider.Default) { }
+    public StringTableFileReader(ReadOnlySpan<byte> data) : this(data, StringTableFileReaderProvider.Default) { }
 
     /// <summary>
     /// Provides a reader for string tables in binary format, allowing iteration over hashed strings and their content.
     /// Initializes with binary data and an optional custom provider for specialized parsing.
     /// </summary>
-    public RStringTableReader(ReadOnlySpan<byte> data, RStringTableReaderProvider provider)
+    public StringTableFileReader(ReadOnlySpan<byte> data, StringTableFileReaderProvider provider)
     {
         VerifySignature(data);
 
         unsafe
         {
-            var properties = provider.ReadFileProperties(new RBufferReader(data));
+            var properties = provider.ReadFileProperties(new RawMemoryReader(data));
             {
                 var dataPtr = data.AsReference().AsPointer();
                 _hashesPtr = (ulong*)Unsafe.Add<byte>(dataPtr, properties.HashesOffset);
@@ -93,7 +93,7 @@ public sealed class RStringTableReader
     /// <summary>
     /// Provides metadata information about the string table, including details like hash algorithm and versioning.
     /// </summary>
-    public IRStringTableMetadata Metadata { get; }
+    public IStringTableMetadata Metadata { get; }
 
     /// <summary>
     /// Gets the total number of entries in the string table.
@@ -114,7 +114,7 @@ public sealed class RStringTableReader
     public IEnumerable<KeyValuePair<ulong, string>> ReadAll() => new HashAndStringEnumerator(this);
 
     /// <summary>
-    /// Retrieves an enumerable collection of hashes for all string entries stored in the <see cref="RStringTableReader"/>.
+    /// Retrieves an enumerable collection of hashes for all string entries stored in the <see cref="StringTableFileReader"/>.
     /// </summary>
     /// <returns>
     /// An enumerable collection of ulong representing the hashes of the string entries without
@@ -151,12 +151,12 @@ public sealed class RStringTableReader
     }
 
     /// <summary>
-    /// Efficiently enumerates the hashes of string entries from an <see cref="RStringTableReader"/>.
+    /// Efficiently enumerates the hashes of string entries from an <see cref="StringTableFileReader"/>.
     /// This enumerator is designed for iterating through large sets of hashes without loading
     /// the associated string content into memory, optimizing performance for scenarios that
     /// solely require hash processing.
     /// </summary>
-    private struct FastHashesEnumerator(RStringTableReader reader) : IEnumerable<ulong>, IEnumerator<ulong>
+    private struct FastHashesEnumerator(StringTableFileReader reader) : IEnumerable<ulong>, IEnumerator<ulong>
     {
         private int _index = -1;
 
@@ -184,10 +184,10 @@ public sealed class RStringTableReader
 
     /// <summary>
     /// Represents an enumerator that iterates through the entries of a string table, yielding each entry's hash and its
-    /// corresponding string content. This struct is designed to be used internally by <see cref="RStringTableReader"/>
+    /// corresponding string content. This struct is designed to be used internally by <see cref="StringTableFileReader"/>
     /// to provide an enumerable collection of string table entries with both hash values and string contents.
     /// </summary>
-    private struct HashAndStringEnumerator(RStringTableReader reader)
+    private struct HashAndStringEnumerator(StringTableFileReader reader)
         : IEnumerable<KeyValuePair<ulong, string>>, IEnumerator<KeyValuePair<ulong, string>>
     {
         private int _index = -1;

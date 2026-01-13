@@ -12,39 +12,39 @@ using Microsoft.Win32.SafeHandles;
 
 namespace Rion.Core;
 
-public partial class RStringTable
+public partial class StringTable
 {
 
-    public static void Write(Stream output, IRStringTable table)
+    public static void Write(Stream output, IStringTable table)
     {
-        using (var writer = new RStringTableWriter(table))
+        using (var writer = new StringTableFileWriter(table))
         {
             writer.WriteTo(output);
         }
     }
 
     ///
-    public static void Write(FileStream output, IRStringTable table)
+    public static void Write(FileStream output, IStringTable table)
     {
-        using (var writer = new RStringTableWriter(table))
+        using (var writer = new StringTableFileWriter(table))
         {
             writer.WriteTo(output);
         }
     }
 
-    public static void Write(SafeFileHandle handle, int fileOffset, IRStringTable table)
+    public static void Write(SafeFileHandle handle, int fileOffset, IStringTable table)
     {
-        using (var writer = new RStringTableWriter(table))
+        using (var writer = new StringTableFileWriter(table))
         {
             writer.WriteTo(handle, fileOffset);
         }
     }
 
-    public static void Write(string outputPath, IRStringTable table)
+    public static void Write(string outputPath, IStringTable table)
     {
         using (var file = Internal.FileOperations.OpenOrCreate(outputPath))
         {
-            using (var writer = new RStringTableWriter(table))
+            using (var writer = new StringTableFileWriter(table))
             {
                 writer.WriteTo(file);
             }

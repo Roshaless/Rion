@@ -18,7 +18,7 @@ namespace Rion.Core.Buffers;
 /// Represents a scope for managing a file buffer, providing access to its contents as a span of bytes.
 /// This class ensures proper handling and disposal of the underlying resources.
 /// </summary>
-public sealed class RFileBufferScope : SafeHandle
+public sealed class FileBufferScope : SafeHandle
 {
     /// <summary>
     /// The length of the buffer managed by this scope.
@@ -28,13 +28,13 @@ public sealed class RFileBufferScope : SafeHandle
     // The pointer and writer are used to store the file buffer,
     // and the pointer is used if the file bytes can be read all at once,
     // whereas the writer is used to copy the file bytes incrementally if the file size is not known.
-    private RBufferWriter? _writer;
+    private RawMemoryWriter? _writer;
 
     /// <summary>
     /// Represents a scope for managing a file buffer, encapsulating access to its contents as a byte span.
     /// Ensures proper resource management and disposal of the underlying buffer.
     /// </summary>
-    private RFileBufferScope(nint buffer, int length) : base(nint.Zero, true)
+    private FileBufferScope(nint buffer, int length) : base(nint.Zero, true)
     {
         SetHandle(buffer);
         {
@@ -46,7 +46,7 @@ public sealed class RFileBufferScope : SafeHandle
     /// Manages a file buffer scope, facilitating access to file content as a byte span.
     /// Automatically handles resource disposal and ensures efficient memory management.
     /// </summary>
-    private RFileBufferScope(RBufferWriter writer) : base(nint.Zero, true) => _writer = writer;
+    private FileBufferScope(RawMemoryWriter writer) : base(nint.Zero, true) => _writer = writer;
 
     /// <inheritdoc />
     public override bool IsInvalid => handle == nint.Zero && _writer is null;
@@ -95,16 +95,16 @@ public sealed class RFileBufferScope : SafeHandle
     }
 
     /// <summary>
-    /// Creates an <see cref="RFileBufferScope"/> instance from the specified file path,
+    /// Creates an <see cref="FileBufferScope"/> instance from the specified file path,
     /// providing access to the file's contents as a managed buffer scope.
     /// </summary>
     /// <param name="path">The path to the file from which to create the buffer scope.</param>
-    /// <returns>A new <see cref="RFileBufferScope"/> instance initialized with the file's data.</returns>
-    public static RFileBufferScope CreateFrom(string path)
+    /// <returns>A new <see cref="FileBufferScope"/> instance initialized with the file's data.</returns>
+    public static FileBufferScope CreateFrom(string path)
     {
-        static unsafe RFileBufferScope ReadByUnknownLength(SafeFileHandle sfh)
+        static unsafe FileBufferScope ReadByUnknownLength(SafeFileHandle sfh)
         {
-            var writer = new RBufferWriter();
+            var writer = new RawMemoryWriter();
             void* buffer = stackalloc byte[512];
 
             try
@@ -114,7 +114,7 @@ public sealed class RFileBufferScope : SafeHandle
                     var n = RandomAccess.Read(sfh, new Span<byte>(buffer, 512), writer.Length);
                     if (n == 0)
                     {
-                        return new RFileBufferScope(writer);
+                        return new FileBufferScope(writer);
                     }
 
                     writer.Write(buffer, n);
@@ -173,7 +173,7 @@ public sealed class RFileBufferScope : SafeHandle
                 sfh.Dispose();
             }
 
-            return new RFileBufferScope((nint)bytes, fileLength);
+            return new FileBufferScope((nint)bytes, fileLength);
         }
     }
 

@@ -17,17 +17,17 @@ namespace Rion.Core.Serialization;
 /// name="T"/>. Derived classes must implement the <see cref="Deserialize(ReadOnlySpan{byte})"/> and <see
 /// cref="Serialize(Stream, T)"/> methods to handle the specific serialization logic for the type.
 /// </remarks>
-/// <typeparam name="T">The type of the string table that implements <see cref="IRStringTable"/>.</typeparam>
-public abstract class RStringTableConverter<T> : RStringTableConverter where T : IRStringTable
+/// <typeparam name="T">The type of the string table that implements <see cref="IStringTable"/>.</typeparam>
+public abstract class StringTableConverter<T> : StringTableConverter where T : IStringTable
 {
     /// <summary>
-    /// Initializes a new instance of the <see cref="RStringTableConverter"/> class.
+    /// Initializes a new instance of the <see cref="StringTableConverter"/> class.
     /// </summary>
     /// <remarks>
-    /// This constructor sets up the base type conversion for the <see cref="RStringTableConverter"/>
+    /// This constructor sets up the base type conversion for the <see cref="StringTableConverter"/>
     /// by specifying the source and target types as the same type.
     /// </remarks>
-    public RStringTableConverter() : base(typeof(T), typeof(T)) { }
+    public StringTableConverter() : base(typeof(T), typeof(T)) { }
 
     /// <summary>
     /// Deserializes the specified byte span into an instance of type <typeparamref name="T"/>.
