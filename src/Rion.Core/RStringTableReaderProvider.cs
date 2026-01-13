@@ -8,7 +8,6 @@ using System;
 
 using Rion.Core.Buffers;
 using Rion.Core.Metadata;
-using Rion.Core.Metadata.Legacy;
 
 namespace Rion.Core;
 
@@ -20,12 +19,28 @@ namespace Rion.Core;
 public abstract class RStringTableReaderProvider
 {
     /// <summary>
-    /// Gets the default instance of <see cref="RStringTableReaderProvider"/>, which serves as the fundamental
-    /// implementation for parsing string table data from binary sources. It adheres to standard parsing rules
-    /// and string decoding, offering a ready-to-use solution for developers without needing to implement
-    /// a custom provider.
+    /// Gets the provider for the latest supported string table.
     /// </summary>
-    public static RStringTableReaderProvider Default { get; } = new DefaultReaderProvider();
+    /// <remarks>Use this property to access the most recent version of the <see cref="RStringTableReaderProvider"/>.
+    /// This is typically recommended unless a specific older version is required for compatibility.</remarks>
+    public static RStringTableReaderProvider Default => PatchV1502;
+
+    /// <summary>
+    /// Gets the provider for reading string tables of version 15.2.
+    /// </summary>
+    public static RStringTableReaderProvider PatchV1502 { get; } = new PatchV1502ReaderProvider();
+
+    /// <summary>
+    /// Gets the provider for reading string tables of version 14.15.
+    /// </summary>
+    public static RStringTableReaderProvider PatchV1415 { get; } = new PatchV1415ReaderProvider();
+
+    /// <summary>
+    /// Gets a provider for reading string tables in the legacy V5 format.
+    /// </summary>
+    /// <remarks>Use this provider to read string tables that are stored in the legacy V5 format. This is
+    /// intended for compatibility with older data sources that have not been migrated to newer formats.</remarks>
+    public static RStringTableReaderProvider LegacyV5 { get; } = new LegacyV5ReaderProvider();
 
     /// <summary>
     /// Abstract method to read and extract the properties of a string table from the provided binary data reader.
@@ -49,13 +64,20 @@ public abstract class RStringTableReaderProvider
     /// This class is a concrete subclass of <see cref="RStringTableReaderProvider" />, offering standard behavior
     /// for interpreting string table files, property extraction, and string decoding.
     /// </summary>
-    private sealed class DefaultReaderProvider : RStringTableReaderProvider
+    private abstract class V5PatchReaderProvider : RStringTableReaderProvider
     {
         /// <inheritdoc />
         public override RStringTableFileProperties ReadFileProperties(RBufferReader reader)
         {
             var version = reader.Read<int>() >> 24;
-            var metadata = version is not 2 ? GetMetadata(version) : ReadLegacyFontConfigMetadata(reader);
+            var metadata = version switch
+            {
+                5 => GetV5Metadata(),
+                4 => RStringTableMetadata.Version4,
+                3 => RStringTableMetadata.Version3,
+                2 => ReadLegacyFontConfigMetadata(reader),
+                _ => throw new NotSupportedException($"Not Supported rst version: {version}")
+            };
 
             var entryCount = reader.Read<int>();
             var hashesOffset = reader.Position;
@@ -67,32 +89,10 @@ public abstract class RStringTableReaderProvider
         public override string ReadString(ReadOnlySpan<byte> span) => RStringPool.GetOrAdd(span);
 
         /// <summary>
-        /// Retrieves the metadata for a specific version of the string table.
-        /// This method selects the appropriate metadata based on the provided version number.
-        /// If the version is not supported, a <see cref="NotSupportedException" /> is thrown.
+        /// Retrieves the metadata associated with the version 5 string table.
         /// </summary>
-        /// <param name="version">The version number of the string table for which metadata is required.</param>
-        /// <returns>The metadata object corresponding to the specified version.</returns>
-        /// <exception cref="NotSupportedException">Thrown when the provided version is not supported.</exception>
-        private static IRStringTableMetadata GetMetadata(int version)
-        {
-            return version switch
-            {
-#if Before_v14_15
-                // 9/1/2021 - 14.14
-                5 => RStringTableMetadata.Version5,
-#elif Before_v15_2
-                // 14.15 - 15.1
-                5 => RStringTableMetadata.Version5_1T1,
-#else
-                // 15.2 - Latest
-                5 => RStringTableMetadata.Version5_2T1,
-#endif
-                4 => RStringTableMetadata.Version4,
-                3 => RStringTableMetadata.Version3,
-                _ => throw new NotSupportedException($"Not Supported rst version: {version}")
-            };
-        }
+        /// <returns>An <see cref="IRStringTableMetadata"/> instance containing metadata for the version 5 string table.</returns>
+        protected abstract IRStringTableMetadata GetV5Metadata();
 
         /// <summary>
         /// Reads the legacy font configuration metadata from the binary reader based on the specific versioning requirements.
@@ -114,5 +114,32 @@ public abstract class RStringTableReaderProvider
                 ? RStringPool.GetOrAdd(reader.Read(reader.Read<int>()))
                 : null);
         }
+    }
+
+    /// <summary>
+    /// Provides a V5 patch reader implementation for version 15.2 string table metadata.
+    /// </summary>
+    private sealed class PatchV1502ReaderProvider : V5PatchReaderProvider
+    {
+        /// <inheritdoc />
+        protected override IRStringTableMetadata GetV5Metadata() => RStringTableMetadata.Version5Patch1502;
+    }
+
+    /// <summary>
+    /// Provides a V5 patch reader implementation for version 14.15 (to 15.2) string table metadata.
+    /// </summary>
+    private sealed class PatchV1415ReaderProvider : V5PatchReaderProvider
+    {
+        /// <inheritdoc />
+        protected override IRStringTableMetadata GetV5Metadata() => RStringTableMetadata.Version5Patch1415;
+    }
+
+    /// <summary>
+    /// Provides a V5-compatible implementation of the patch reader provider for legacy data formats.
+    /// </summary>
+    private sealed class LegacyV5ReaderProvider : V5PatchReaderProvider
+    {
+        /// <inheritdoc />
+        protected override IRStringTableMetadata GetV5Metadata() => RStringTableMetadata.Version5Legacy;
     }
 }

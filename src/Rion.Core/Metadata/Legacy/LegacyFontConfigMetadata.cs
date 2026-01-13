@@ -4,9 +4,16 @@
 // This source code is distributed under an MIT license.
 // LICENSE file in the root directory of this source tree.
 
+
+// Copyright (c) 2024 Roshaless
+// All rights reserved.
+//
+// This source code is distributed under an MIT license.
+// LICENSE file in the root directory of this source tree.
+
 using Rion.Core.Hashing;
 
-namespace Rion.Core.Metadata.Legacy;
+namespace Rion.Core.Metadata;
 
 /// <summary>
 /// Defines the contract for legacy font configuration metadata, including versioning and hash algorithm details.
@@ -27,13 +34,13 @@ public sealed record LegacyFontConfigMetadata : ILegacyFontConfigMetadata
     private sealed class NullFontConfigMetadata : ILegacyFontConfigMetadata
     {
         /// <inheritdoc />
-        public IRSTHashAlgorithm HashAlgorithm => RSTHashAlgorithm.V2_V3;
-
-        /// <inheritdoc />
         public byte Version => 2;
 
         /// <inheritdoc />
         public string? FontConfig { get => null; set { } }
+
+        /// <inheritdoc />
+        public RSTHashAlgorithm HashAlgorithm => RSTHashAlgorithm.Create(RSTHashAlgorithmOptions.Version2);
     }
 
     /// <summary>
@@ -42,7 +49,7 @@ public sealed record LegacyFontConfigMetadata : ILegacyFontConfigMetadata
     public LegacyFontConfigMetadata()
     {
         Version = 2;
-        HashAlgorithm = RSTHashAlgorithm.V2_V3;
+        HashAlgorithm = RSTHashAlgorithm.Create(RSTHashAlgorithmOptions.Version2);
     }
 
     /// <summary>
@@ -52,11 +59,11 @@ public sealed record LegacyFontConfigMetadata : ILegacyFontConfigMetadata
     public LegacyFontConfigMetadata(string? fontConfig) : this() => FontConfig = fontConfig;
 
     /// <inheritdoc />
-    public IRSTHashAlgorithm HashAlgorithm { get; }
-
-    /// <inheritdoc />
     public byte Version { get; }
 
     /// <inheritdoc />
     public string? FontConfig { get; set; }
+
+    /// <inheritdoc />
+    public RSTHashAlgorithm HashAlgorithm { get; }
 }

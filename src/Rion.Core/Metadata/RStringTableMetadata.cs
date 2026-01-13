@@ -8,50 +8,58 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 
 using Rion.Core.Hashing;
-using Rion.Core.Metadata.Legacy;
 
 namespace Rion.Core.Metadata;
 
 /// <summary>
 /// Represents the metadata for a string table, including hashing algorithm and version details.
 /// </summary>
-public static class RStringTableMetadata
+/// <param name="HashAlgorithm">The hash algorithm to set.</param>
+/// <param name="Version">The version to set.</param>
+public record class RStringTableMetadata(RSTHashAlgorithm HashAlgorithm, byte Version) : IRStringTableMetadata
 {
-    /// <summary>
-    /// Represents the metadata for version 2, indicating a legacy configuration without a backing font configuration.
-    /// </summary>
-    public static readonly IRStringTableMetadata Version2 = LegacyFontConfigMetadata.NullMetadata;
+    public static RStringTableMetadata Latest => Version5Patch1502;
 
     /// <summary>
-    /// Represents the metadata for version 3, indicating a legacy configuration with a specific hash bits mask type set to <see cref="RSTHashBitsMaskType.Mask40"/>.
+    /// Represents the metadata for a string table with version 2.
     /// </summary>
-    public static readonly IRStringTableMetadata Version3 = new LegacyNoFontConfigMetadata(false);
+    public static LegacyFontConfigMetadata Version2 => new();
 
     /// <summary>
-    /// Represents the metadata for version 4, indicating a legacy configuration with a specific hash bits mask type set to <see cref="RSTHashBitsMaskType.Mask39"/>.
+    /// Represents the metadata for a string table with version 3.
     /// </summary>
-    public static readonly IRStringTableMetadata Version4 = new LegacyNoFontConfigMetadata(true);
+    public static RStringTableMetadata Version3 => Create(RSTHashAlgorithmOptions.Version3, 3);
 
     /// <summary>
-    /// Represents the metadata for version 5 applicable to versions prior to v14.15.
+    /// Represents the metadata for a string table with version 4.
     /// </summary>
-    public static readonly IRStringTableMetadata Version5 = new Metadata(RSTHashAlgorithm.V4_V5, 5);
+    public static RStringTableMetadata Version4 => Create(RSTHashAlgorithmOptions.Version4, 4);
 
     /// <summary>
-    ///Represents the metadata for version 5 applicable to v14.15 through v15.2.
+    /// Represents the metadata for a string table with version 5 (legacy).
     /// </summary>
-    public static readonly IRStringTableMetadata Version5_1T1 = new Metadata(RSTHashAlgorithm.V5_1T1, 5);
+    public static RStringTableMetadata Version5Legacy => Create(RSTHashAlgorithmOptions.Version5, 5);
 
     /// <summary>
-    /// Represents the metadata for version 5 applicable to versions start with v15.2.
+    /// Represents the metadata for a string table with version 5 and patch 14.15.
     /// </summary>
-    public static readonly IRStringTableMetadata Version5_2T1 = new Metadata(RSTHashAlgorithm.V5_2T1, 5);
+    public static RStringTableMetadata Version5Patch1415 => Create(RSTHashAlgorithmOptions.Version5Patch1415, 5);
 
     /// <summary>
-    /// Points to the most up-to-date version of the string table metadata.
-    /// This is used as the default for creating new <see cref="RStringTable"/> instances.
+    /// Represents the metadata for a string table with version 5 and patch 15.02.
     /// </summary>
-    public static readonly IRStringTableMetadata Latest = Version5_2T1;
+    public static RStringTableMetadata Version5Patch1502 => Create(RSTHashAlgorithmOptions.Version5Patch1502, 5);
+
+    /// <summary>
+    /// Creates a new instance of <see cref="RStringTableMetadata"/> with the specified hash algorithm options and version.
+    /// </summary>
+    /// <param name="options">The hash algorithm options to use.</param>
+    /// <param name="version">The version to set.</param>
+    /// <returns>A new instance of <see cref="RStringTableMetadata"/>.</returns>
+    public static RStringTableMetadata Create(RSTHashAlgorithmOptions options, byte version)
+    {
+        return new RStringTableMetadata(RSTHashAlgorithm.Create(options), version);
+    }
 
     /// <summary>
     /// Retrieves the metadata for the specified version.
@@ -97,36 +105,40 @@ public static class RStringTableMetadata
         {
             {
                 Version: 2,
-                HashAlgorithm: { BitsMaskType: RSTHashBitsMaskType.Mask40, TrimmingOption: RSTHashTrimmingOption.None }
+                HashAlgorithm.BitMask.Bits: 40
             } or ILegacyFontConfigMetadata => "v2",
             {
                 Version: 3,
-                HashAlgorithm: { BitsMaskType: RSTHashBitsMaskType.Mask40, TrimmingOption: RSTHashTrimmingOption.None }
+                HashAlgorithm.BitMask.Bits: 40
             } => "v3",
             {
                 Version: 4,
-                HashAlgorithm: { BitsMaskType: RSTHashBitsMaskType.Mask39, TrimmingOption: RSTHashTrimmingOption.None }
+                HashAlgorithm.BitMask.Bits: 39
             } => "v4",
             {
                 Version: 5,
-                HashAlgorithm: { BitsMaskType: RSTHashBitsMaskType.Mask39, TrimmingOption: RSTHashTrimmingOption.None }
-            } => "v5",
+                HashAlgorithm.Options:
+                {
+                    Format: RSTHashAlgorithmFormat.XxHash64,
+                    BitMask.Bits: 39
+                }
+            } => "v5-legacy",
             {
                 Version: 5,
-                HashAlgorithm:
+                HashAlgorithm.Options:
                 {
-                    BitsMaskType: RSTHashBitsMaskType.Mask39,
-                    TrimmingOption: RSTHashTrimmingOption.TrimHigh3BytesWithMaskLow8Bits
+                    Format: RSTHashAlgorithmFormat.XxHash3,
+                    BitMask.Bits: 39
                 }
-            } => "v5-1t1",
+            } => "v5-patch1415",
             {
                 Version: 5,
-                HashAlgorithm:
+                HashAlgorithm.Options:
                 {
-                    BitsMaskType: RSTHashBitsMaskType.Mask38,
-                    TrimmingOption: RSTHashTrimmingOption.TrimHigh3BytesWithMaskLow8Bits
+                    Format: RSTHashAlgorithmFormat.XxHash3,
+                    BitMask.Bits: 38
                 }
-            } => "v5-2t1",
+            } => "v5-patch1502",
             _ => null
         };
 
@@ -150,9 +162,9 @@ public static class RStringTableMetadata
         metadata = version.ToLower() switch
         {
             "latest" => Latest,
-            "v5-2t1" => Version5_2T1,
-            "v5-1t1" => Version5_1T1,
-            "5" or "v5" => Version5,
+            "v5-patch1502" => Version5Patch1502,
+            "v5-patch1415" => Version5Patch1415,
+            "v5-legacy" => Version5Legacy,
             "4" or "v4" => Version4,
             "3" or "v3" => Version3,
             "2" or "v2" => new LegacyFontConfigMetadata(),
@@ -161,11 +173,4 @@ public static class RStringTableMetadata
 
         return metadata is not null;
     }
-
-    /// <summary>
-    /// Represents record and read-only metadata class used to create metadata with different options.
-    /// </summary>
-    /// <param name="HashAlgorithm">The hash algorithm to set.</param>
-    /// <param name="Version">The version to set.</param>
-    private sealed record Metadata(IRSTHashAlgorithm HashAlgorithm, byte Version) : IRStringTableMetadata { }
 }

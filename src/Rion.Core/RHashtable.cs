@@ -4,6 +4,7 @@
 // This source code is distributed under an MIT license.
 // LICENSE file in the root directory of this source tree.
 
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
@@ -38,10 +39,12 @@ public static class RHashtable
     /// <param name="strings">The collection of strings to load.</param>
     /// <param name="hashAlgorithm">The hash algorithm to use.</param>
     /// <typeparam name="T">The type of the collection.</typeparam>
-    public static void LoadFromStrings<T>(T strings, IRSTHashAlgorithm? hashAlgorithm = null) where T : IEnumerable<string>
+    public static void LoadFromStrings<T>(T strings, RSTHashAlgorithm hashAlgorithm) where T : IEnumerable<string>
     {
+        ArgumentNullException.ThrowIfNull(strings, nameof(strings));
+        ArgumentNullException.ThrowIfNull(hashAlgorithm, nameof(hashAlgorithm));
+
         if (!strings.Any()) return;
-        hashAlgorithm ??= RSTHashAlgorithm.Latest;
 
         s_loadedHashtable = s_loadedHashtable.AddRange(GetStringNames(strings)
             .Distinct().Select(x => KeyValuePair.Create(hashAlgorithm.Hash(x), x)));

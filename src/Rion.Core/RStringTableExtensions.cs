@@ -14,7 +14,6 @@ using System.Text;
 
 using Rion.Core.Internal;
 using Rion.Core.Metadata;
-using Rion.Core.Metadata.Legacy;
 
 namespace Rion.Core;
 

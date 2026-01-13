@@ -54,7 +54,7 @@ public static class RStringPool
         }
 
         result = StringHelper.CreateStringFromBytes(span);
-        s_stringCache[stringHash] = new WeakReference(result);
+        stringCache = new WeakReference(result);
         return result;
     }
 

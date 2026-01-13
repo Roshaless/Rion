@@ -12,7 +12,6 @@ using System.Text.Json;
 
 using Rion.Core.Internal;
 using Rion.Core.Metadata;
-using Rion.Core.Metadata.Legacy;
 
 #pragma warning disable IDE0130
 

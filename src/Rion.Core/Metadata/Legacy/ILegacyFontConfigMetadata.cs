@@ -4,7 +4,7 @@
 // This source code is distributed under an MIT license.
 // LICENSE file in the root directory of this source tree.
 
-namespace Rion.Core.Metadata.Legacy;
+namespace Rion.Core.Metadata;
 
 /// <summary>
 /// [Legacy] Defines the required properties for a font configuration metadata in a legacy rst (v2).

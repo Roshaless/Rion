@@ -5,7 +5,6 @@
 // LICENSE file in the root directory of this source tree.
 
 using System;
-using System.Collections.Immutable;
 
 using Rion.Core.Buffers;
 
@@ -38,7 +37,7 @@ public partial class RStringTable
     public static RStringTable Read(ReadOnlySpan<byte> data)
     {
         var reader = new RStringTableReader(data);
-        var entries = reader.ReadAll().ToImmutableDictionary();
+        var entries = reader.ReadAll();
 
         return Create(reader.Metadata, entries);
     }

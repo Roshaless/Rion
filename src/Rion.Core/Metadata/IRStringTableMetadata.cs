@@ -16,7 +16,7 @@ public interface IRStringTableMetadata
     /// <summary>
     /// Gets the hash algorithm instance used for generating hashes within the string table.
     /// </summary>
-    IRSTHashAlgorithm HashAlgorithm { get; }
+    RSTHashAlgorithm HashAlgorithm { get; }
 
     /// <summary>
     /// Gets the current version of the string table metadata.

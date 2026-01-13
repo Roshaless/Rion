@@ -12,7 +12,7 @@ using Microsoft.Win32.SafeHandles;
 
 using Rion.Core.Buffers;
 using Rion.Core.Internal;
-using Rion.Core.Metadata.Legacy;
+using Rion.Core.Metadata;
 
 namespace Rion.Core;
 

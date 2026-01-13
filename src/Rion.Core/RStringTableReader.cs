@@ -79,8 +79,8 @@ public sealed class RStringTableReader
 
             var hashAlgorithm = properties.Metadata.HashAlgorithm;
             {
-                _bitsMask = hashAlgorithm.BitsMaskValue;
-                _hashBits = (int)hashAlgorithm.BitsMaskType;
+                _bitsMask = hashAlgorithm.BitMask.Value;
+                _hashBits = hashAlgorithm.BitMask.Bits;
             }
 
             _provider = provider;

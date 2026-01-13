@@ -87,7 +87,7 @@ static void DoConvert(List<(string, IRStringTable)> collection, Func<(string, IR
 }
 
 
-static void LoadHashes(string hashesDir, params IRSTHashAlgorithm[] hashAlgorithms)
+static void LoadHashes(string hashesDir, params RSTHashAlgorithm[] hashAlgorithms)
 {
     if (hashAlgorithms.Length == 0)
         return;
