@@ -16,6 +16,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rion.Core", "src\Rion.Core\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rion.Cli", "src\Rion.Cli\Rion.Cli.csproj", "{303D0C95-5E4C-4C05-892F-CA85736CB260}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Sources", "Sources", "{2697B2C0-164A-4BDD-9383-492EC979D28D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{175A0AFF-8101-47EF-A56A-FC2425D18CA8} = {2697B2C0-164A-4BDD-9383-492EC979D28D}
+		{303D0C95-5E4C-4C05-892F-CA85736CB260} = {2697B2C0-164A-4BDD-9383-492EC979D28D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {7AF79B51-EDB3-4898-8568-2E410D6D716D}
