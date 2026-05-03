@@ -224,10 +224,8 @@ Rion is designed for extreme throughput on large files. Typical benchmarks on a 
 
 | Operation | Throughput |
 |-----------|-----------|
-| XxHash3 hashing | ~2.9M hashes/s |
-| Read .stringtable (100K entries) | ~15 ms |
-| Write .stringtable (100K entries) | ~20 ms |
-| JSON ↔ RST conversion | ~50 MB/s |
+| Read .stringtable (100K entries) | ~22 ms |
+| Write .stringtable (100K entries) | ~27 ms |
 
 Key optimizations:
 - Zero-copy `Span<byte>` / `ReadOnlySpan<byte>` throughout

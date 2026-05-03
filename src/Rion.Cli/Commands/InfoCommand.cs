@@ -71,8 +71,6 @@ internal static class InfoCommand
 
             // Metadata
             Console.WriteLine($"  Version     : {metadata.Version}");
-            Console.WriteLine($"  Hash Algo   : {metadata.HashAlgorithm.Options.Format}");
-            Console.WriteLine($"  Bit Mask    : {metadata.HashAlgorithm.BitMask.Bits} bits (0x{metadata.HashAlgorithm.BitMask.Value:X})");
 
             // Statistics
             Console.WriteLine($"  Entries     : {entryList.Count:N0}");
