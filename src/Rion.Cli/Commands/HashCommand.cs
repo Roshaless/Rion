@@ -75,7 +75,7 @@ internal static class HashCommand
 
         try
         {
-            var (label, options) = ResolveVersion(version);
+            var (label, options) = VersionHelper.Resolve(version);
             var algorithm = RSTHashAlgorithm.Create(options);
 
             if (count <= 1)
@@ -109,24 +109,6 @@ internal static class HashCommand
             Console.Error.WriteLine($"Error: {ex.Message}");
             return Task.FromResult(1);
         }
-    }
-
-    /// <summary>
-    /// Maps a version identifier string to its <see cref="RSTHashAlgorithmOptions"/> and a human-readable label.
-    /// </summary>
-    private static (string Label, RSTHashAlgorithmOptions Options) ResolveVersion(string version)
-    {
-        return version.ToLowerInvariant() switch
-        {
-            "v2" or "2" => ("v2", RSTHashAlgorithmOptions.Version2),
-            "v3" or "3" => ("v3", RSTHashAlgorithmOptions.Version3),
-            "v4" or "4" => ("v4", RSTHashAlgorithmOptions.Version4),
-            "v5" or "5" or "v5-legacy" => ("v5 (legacy)", RSTHashAlgorithmOptions.Version5),
-            "v5-1415" or "v5-patch1415" => ("v5 (patch 14.15)", RSTHashAlgorithmOptions.Version5Patch1415),
-            "v5-1502" or "v5-patch1502" or "latest" => ("v5 (patch 15.02, latest)", RSTHashAlgorithmOptions.Version5Patch1502),
-            _ => throw new ArgumentException(
-                $"Unknown version '{version}'. Use --list-versions to see available versions."),
-        };
     }
 
     private static void PrintVersionTable()

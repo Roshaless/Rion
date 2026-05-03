@@ -44,6 +44,11 @@ static CommandLineBuilder BuildCommandLine()
         description: "Directory containing hash text files to preload."
     );
 
+    var versionOption = new Option<string?>(
+        aliases: ["--rst-version", "-v"],
+        description: "Specify the RST file version for output metadata (v2, v3, v4, v5, v5-1415, v5-1502, latest)."
+    );
+
     var rootCommand = new RootCommand(
         "Rion — Riot String Table CLI tool. Convert, inspect, query, and hash .stringtable files."
     );
@@ -53,10 +58,11 @@ static CommandLineBuilder BuildCommandLine()
     rootCommand.AddOption(outputDirOption);
     rootCommand.AddOption(formatOption);
     rootCommand.AddOption(hashesDirOption);
+    rootCommand.AddOption(versionOption);
 
     rootCommand.SetHandler(
         ConvertCommand.HandleFilesAsync,
-        filesArgument, outputOption, outputDirOption, formatOption, hashesDirOption);
+        filesArgument, outputOption, outputDirOption, formatOption, hashesDirOption, versionOption);
 
     rootCommand.AddCommand(InfoCommand.Create());
     rootCommand.AddCommand(LookupCommand.Create());

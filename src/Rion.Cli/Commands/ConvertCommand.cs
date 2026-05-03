@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using Rion.Core;
 using Rion.Core.Buffers;
 using Rion.Core.Hashing;
+using Rion.Core.Metadata;
 using Rion.Core.Serialization;
 
 namespace Rion.Cli.Commands;
@@ -29,7 +30,8 @@ internal static class ConvertCommand
         string? output,
         DirectoryInfo? outputDir,
         string? format,
-        DirectoryInfo? hashesDir)
+        DirectoryInfo? hashesDir,
+        string? version)
     {
         if (files.Length == 0)
             return 0;
@@ -45,6 +47,22 @@ internal static class ConvertCommand
         {
             Console.Error.WriteLine("Error: --to must be 'json' or 'rst'.");
             return 1;
+        }
+
+        // Resolve --version
+        RSTHashAlgorithmOptions? versionOptions = null;
+        string? versionLabel = null;
+        if (version is not null)
+        {
+            try
+            {
+                (versionLabel, versionOptions) = VersionHelper.Resolve(version);
+            }
+            catch (ArgumentException ex)
+            {
+                Console.Error.WriteLine($"Error: {ex.Message}");
+                return 1;
+            }
         }
 
         await LoadHashesAsync(hashesDir);
@@ -69,7 +87,7 @@ internal static class ConvertCommand
 
                 var outputPath = output
                     ?? BuildOutputPath(file, outputFormat, outputDir);
-                ConvertFile(file, inputFormat, outputFormat, outputPath);
+                ConvertFile(file, inputFormat, outputFormat, outputPath, versionLabel, versionOptions);
 
                 Console.WriteLine($"{file} → {outputPath}");
                 successCount++;
@@ -112,19 +130,40 @@ internal static class ConvertCommand
     }
 
     private static void ConvertFile(
-        string inputPath, FileFormat inputFormat, FileFormat outputFormat, string outputPath)
+        string inputPath,
+        FileFormat inputFormat,
+        FileFormat outputFormat,
+        string outputPath,
+        string? versionLabel,
+        RSTHashAlgorithmOptions? versionOptions)
     {
         using var scope = FileBufferScope.CreateFrom(inputPath);
         var span = scope.Span;
 
         if (inputFormat == FileFormat.Rst && outputFormat == FileFormat.Json)
         {
-            var table = StringTable.ReadAsRecord(span);
+            // RST → JSON: use version-specific provider when --version is specified
+            var provider = versionLabel is not null
+                ? GetReaderProvider(versionLabel)
+                : StringTableFileReaderProvider.Default;
+
+            var reader = new StringTableFileReader(span, provider);
+            var table = StringTable.CreateRecord(reader.Metadata, [.. reader.ReadAll()]);
+
             StringTableSerializer.SerializeToJsonFile(outputPath, table);
         }
         else if (inputFormat == FileFormat.Json && outputFormat == FileFormat.Rst)
         {
+            // JSON → RST: version overrides the metadata used for output
             var table = StringTableSerializer.DeserializeFromJson(span);
+
+            if (versionOptions is not null)
+            {
+                var metadata = StringTableMetadata.Create(versionOptions.Value, GetVersionByte(versionLabel!));
+                table = StringTable.Create(metadata, table);
+                Console.WriteLine($"  Using version: {versionLabel}");
+            }
+
             StringTable.Write(outputPath, table);
         }
         else
@@ -132,6 +171,37 @@ internal static class ConvertCommand
             throw new InvalidOperationException(
                 $"Cannot convert {inputFormat} → {outputFormat}. Source and target are same format.");
         }
+    }
+
+    /// <summary>
+    /// Selects the appropriate <see cref="StringTableFileReaderProvider"/> for a given version label.
+    /// </summary>
+    private static StringTableFileReaderProvider GetReaderProvider(string versionLabel)
+    {
+        return versionLabel switch
+        {
+            "v5 (patch 15.02, latest)" => StringTableFileReaderProvider.PatchV1502,
+            "v5 (patch 14.15)" => StringTableFileReaderProvider.PatchV1415,
+            "v5 (legacy)" => StringTableFileReaderProvider.LegacyV5,
+            _ => StringTableFileReaderProvider.Default, // v2, v3, v4 → default handles these
+        };
+    }
+
+    /// <summary>
+    /// Extracts the version byte from a version label (e.g., "v5 (patch 15.02, latest)" → 5).
+    /// </summary>
+    private static byte GetVersionByte(string versionLabel)
+    {
+        // Parse the major version number from the label
+        if (versionLabel.StartsWith("v5"))
+            return 5;
+        if (versionLabel.StartsWith("v4"))
+            return 4;
+        if (versionLabel.StartsWith("v3"))
+            return 3;
+        if (versionLabel.StartsWith("v2"))
+            return 2;
+        return 5; // default
     }
 
     private static string BuildOutputPath(
