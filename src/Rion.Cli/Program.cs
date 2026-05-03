@@ -4,121 +4,63 @@
 // This source code is distributed under an MIT license.
 // LICENSE file in the root directory of this source tree.
 
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
+using System.CommandLine;
+using System.CommandLine.Builder;
+using System.CommandLine.Parsing;
 
-using Rion.Core;
-using Rion.Core.Buffers;
-using Rion.Core.Hashing;
-using Rion.Core.Serialization;
+using Rion.Cli.Commands;
 
+return await BuildCommandLine()
+    .UseDefaults()
+    .Build()
+    .InvokeAsync(args);
 
-var toWriteRst = new List<(string, IStringTable)>();
-var writeToJson = new List<(string, IStringTable)>();
-
-foreach (var file in args)
+static CommandLineBuilder BuildCommandLine()
 {
-    try
-    {
-        var fileStream = File.OpenRead(file);
-        var firstByte = fileStream.ReadByte();
-        {
-            fileStream.Dispose();
-        }
+    // Root command: default behavior is auto-convert files
+    var filesArgument = new Argument<string[]>(
+        "files",
+        () => [],
+        "Files to convert. Auto-detects format and converts to the opposite format."
+    );
 
-        using var scope = FileBufferScope.CreateFrom(file);
+    var outputOption = new Option<string?>(
+        aliases: ["--output", "-o"],
+        description: "Output file path (single file only)."
+    );
 
-        if (firstByte is 0x52)
-        {
-            writeToJson.Add((file, StringTable.ReadAsRecord(scope.Span)));
-        }
-        else
-        {
-            toWriteRst.Add((file, StringTableSerializer.DeserializeFromJson(scope.Span)));
-        }
-    }
-    catch
-    {
-        Console.WriteLine($"Invalid input file: {file}.");
-        continue;
-    }
-}
+    var outputDirOption = new Option<System.IO.DirectoryInfo?>(
+        aliases: ["--output-dir", "-d"],
+        description: "Output directory for batch conversion."
+    );
 
-LoadHashes(
-    Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "hashes"),
-    [.. writeToJson.Select(x => x.Item2.Metadata.HashAlgorithm).Distinct()]);
+    var formatOption = new Option<string?>(
+        aliases: ["--to", "-t"],
+        description: "Target format: 'json' or 'rst'. Auto-detected when omitted."
+    );
 
+    var hashesDirOption = new Option<System.IO.DirectoryInfo?>(
+        aliases: ["--hashes-dir"],
+        description: "Directory containing hash text files to preload."
+    );
 
-DoConvert(writeToJson, (x =>
-{
-    var outputPath = ChangeExt(x.Item1, ".json");
-    {
-        StringTableSerializer.SerializeToJsonFile(outputPath, x.Item2);
-    }
+    var rootCommand = new RootCommand(
+        "Rion — Riot String Table CLI tool. Convert, inspect, query, and hash .stringtable files."
+    );
 
-    return outputPath;
-}));
+    rootCommand.AddArgument(filesArgument);
+    rootCommand.AddOption(outputOption);
+    rootCommand.AddOption(outputDirOption);
+    rootCommand.AddOption(formatOption);
+    rootCommand.AddOption(hashesDirOption);
 
-DoConvert(toWriteRst, (x =>
-{
-    var outputPath = ChangeExt(x.Item1, ".stringtable");
-    StringTable.Write(outputPath, x.Item2);
-    return outputPath;
-}));
+    rootCommand.SetHandler(
+        ConvertCommand.HandleFilesAsync,
+        filesArgument, outputOption, outputDirOption, formatOption, hashesDirOption);
 
-static void DoConvert(List<(string, IStringTable)> collection, Func<(string, IStringTable), string> convert)
-{
-    foreach (var item in collection)
-    {
-        Console.WriteLine($"Input: {item.Item1}");
+    rootCommand.AddCommand(InfoCommand.Create());
+    rootCommand.AddCommand(LookupCommand.Create());
+    rootCommand.AddCommand(HashCommand.Create());
 
-        try
-        {
-            var outputPath = convert(item);
-            Console.WriteLine($"Output: {outputPath}");
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine($"Error: {e.Message}");
-        }
-    }
-}
-
-
-static void LoadHashes(string hashesDir, params RSTHashAlgorithm[] hashAlgorithms)
-{
-    if (hashAlgorithms.Length == 0)
-        return;
-
-    if (Directory.Exists(hashesDir) is false)
-        return;
-
-    try
-    {
-        foreach (var path in Directory.EnumerateFiles(hashesDir))
-        {
-            foreach (var hashAlgorithm in hashAlgorithms)
-            {
-                try
-                {
-                    RSTHashtable.LoadFromStrings(File.ReadAllLines(path), hashAlgorithm);
-                }
-                catch (Exception)
-                {
-                    continue;
-                }
-            }
-        }
-    }
-    catch
-    {
-        // ignored
-    }
-}
-
-static string ChangeExt(string path, string ext)
-{
-    return Path.ChangeExtension(Path.GetFullPath(path), ext);
+    return new CommandLineBuilder(rootCommand);
 }
