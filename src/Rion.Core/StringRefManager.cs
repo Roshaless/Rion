@@ -55,7 +55,7 @@ public static class StringRefManager
 
         result = StringHelper.CreateStringFromBytes(span);
         stringCache = new WeakReference(result);
-        return result;
+        return result; 
     }
 
     /// <summary>

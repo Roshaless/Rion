@@ -135,6 +135,7 @@ public sealed class FileBufferScope : SafeHandle
         var fileLength = (int)SafeFileHandle_GetFileLength(sfh);
 
 #if DEBUG
+        // Force the unknown-length read path in DEBUG to exercise the fallback code path.
         fileLength = 0;
 #endif
 
